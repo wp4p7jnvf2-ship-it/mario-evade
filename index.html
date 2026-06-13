@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Super Mario Evade - Global Top 100 Edition (v45.4 Sync)</title>
+    <title>Super Mario Evade - Global Top 100 Edition (v45.5 Final)</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
@@ -42,8 +42,11 @@
         #restart-btn, #share-btn { flex: 1; padding: 8px 5px; font-size: 13px; border-radius: 5px; cursor: pointer; font-weight: bold; font-family: inherit; text-align: center; white-space: nowrap; box-sizing: border-box; }
         #restart-btn { background-color: #ffd700; color: #000; border: 3px solid #fff; box-shadow: 0 0 10px rgba(255,215,0,0.4); }
         #share-btn { background-color: #00ff66; color: #000; border: 3px solid #fff; display: none; } 
-        .coffee-hint { font-size: 11px; color: #ffd700; text-align: center; margin-bottom: 3px; animation: pulseHint 2s infinite alternate; text-shadow: 1px 1px 0 #000; }
+        
+        /* 中英雙語溫馨提示 CSS */
+        .coffee-hint { font-size: 11px; color: #ffd700; text-align: center; margin-bottom: 5px; animation: pulseHint 2s infinite alternate; text-shadow: 1px 1px 0 #000; line-height: 1.4; }
         @keyframes pulseHint { 0% { opacity: 0.6; transform: scale(0.98); } 100% { opacity: 1; transform: scale(1.02); } }
+        
         .bmc-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 5px; font-size: 11px; font-weight: bold; color: #000000; background-color: #FFDD00; border: 3px solid #000000; border-radius: 5px; cursor: pointer; text-decoration: none; font-family: inherit; box-sizing: border-box; }
         .bmc-icon { width: 14px; height: 14px; position: relative; display: inline-block; flex-shrink: 0; }
         .bmc-icon::before { content: ""; position: absolute; width: 2px; height: 2px; background: transparent; box-shadow: 4px 1px #000, 6px 1px #000, 8px 1px #000, 2px 3px #000, 4px 3px #fff, 6px 3px #fff, 8px 3px #fff, 10px 3px #000, 12px 3px #000, 2px 5px #000, 4px 5px #fff, 6px 5px #fff, 8px 5px #fff, 10px 5px #000, 12px 5px #000, 2px 7px #000, 4px 7px #fff, 6px 7px #fff, 8px 7px #fff, 10px 7px #000, 12px 7px #000, 4px 9px #000, 6px 9px #000, 8px 9px #000, 4px 11px #d2691e, 6px 11px #d2691e; }
@@ -81,7 +84,10 @@
                     <button id="restart-btn">START GAME 🚀</button>
                     <button id="share-btn">SHARE RESULT 📢</button>
                 </div>
-                <div class="coffee-hint">☕ 覺得好玩？可以請我飲杯咖啡支持下開發！</div>
+                <div class="coffee-hint">
+                    ☕ 覺得好玩？可以請我飲杯咖啡支持下開發！<br>
+                    Enjoying the game? Buy me a coffee to support the development!
+                </div>
                 <a href="https://www.buymeacoffee.com/phgame_design_creation" target="_blank" class="bmc-btn">
                     <span class="bmc-icon"></span><span>Buy me a coffee</span>
                 </a>
@@ -164,7 +170,6 @@
         function gameTick(timestamp) { if (!lastTime) lastTime = timestamp; let deltaTime = timestamp - lastTime; lastTime = timestamp; if (gameActive) { updateGame(deltaTime); } renderGame(); animationFrameId = requestAnimationFrame(gameTick); }
 
         function updateGame(dt) {
-            // 🕒 統一速度基準！無論 60Hz 還是 144Hz，物理移動速度都完全一致
             let timeScale = dt / 16.666; 
 
             rawScore += (dt * 0.06); score = Math.floor(rawScore); scoreBoard.innerText = `SCORE: ${score} (Level ${gameLevel})`;
