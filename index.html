@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Super Mario Evade - Global Top 100 Edition (v45.5)</title>
+    <title>SUPER EVADE MASTER (v1.00.2 - Daily Challenge)</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
@@ -33,6 +33,8 @@
         #input-area label { font-size: 11px; color: #ffd700; margin-bottom: 4px; text-align: center; font-weight: bold; }
         #player-name-input { width: 100%; padding: 5px; font-size: 14px; border: 3px solid #ffd700; background: #000; color: #fff; text-align: center; font-family: inherit; border-radius: 5px; outline: none; box-sizing: border-box; }
         #submit-btn { margin-top: 5px; padding: 5px 12px; font-size: 12px; background-color: #ffd700; color: #000; border: 2px solid #fff; font-weight: bold; cursor: pointer; border-radius: 3px; }
+        
+        #main-menu-panel { display: none; flex-direction: column; align-items: center; width: 100%; }
         #leaderboard { width: 90%; max-width: 340px; background: rgba(255,255,255,0.08); border: 3px solid #00efff; border-radius: 8px; padding: 4px 10px; margin-bottom: 8px; box-sizing: border-box; height: 40%; max-height: 160px; overflow-y: auto; }
         #leaderboard h3 { text-align: center; color: #00efff; margin: 0 0 4px 0; font-size: 13px; text-shadow: 1px 1px 0 #000; background: rgba(0,239,255,0.2); padding: 3px 0; border-radius: 3px;}
         .score-row { display: flex; justify-content: space-between; font-size: 12px; margin: 3px 0; font-weight: bold; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 2px;}
@@ -43,9 +45,10 @@
         #leaderboard::-webkit-scrollbar { width: 6px; } #leaderboard::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); } #leaderboard::-webkit-scrollbar-thumb { background: #00efff; border-radius: 3px; }
         .action-area { display: flex; flex-direction: column; gap: 6px; width: 90%; max-width: 340px; }
         .btn-row { display: flex; gap: 8px; width: 100%; }
-        #restart-btn, #share-btn { flex: 1; padding: 8px 5px; font-size: 13px; border-radius: 5px; cursor: pointer; font-weight: bold; font-family: inherit; text-align: center; white-space: nowrap; box-sizing: border-box; }
+        #restart-btn, #daily-btn, #share-btn { flex: 1; padding: 8px 5px; font-size: 13px; border-radius: 5px; cursor: pointer; font-weight: bold; font-family: inherit; text-align: center; white-space: nowrap; box-sizing: border-box; }
         #restart-btn { background-color: #ffd700; color: #000; border: 3px solid #fff; box-shadow: 0 0 10px rgba(255,215,0,0.4); }
-        #share-btn { background-color: #00ff66; color: #000; border: 3px solid #fff; display: none; } 
+        #daily-btn { background-color: #ff5252; color: #fff; border: 3px solid #fff; }
+        #share-btn { background-color: #00ff66; color: #000; border: 3px solid #fff; } 
         
         .coffee-hint { font-size: 11px; color: #ffd700; text-align: center; margin-bottom: 5px; animation: pulseHint 2s infinite alternate; text-shadow: 1px 1px 0 #000; line-height: 1.4; }
         @keyframes pulseHint { 0% { opacity: 0.6; transform: scale(0.98); } 100% { opacity: 1; transform: scale(1.02); } }
@@ -70,32 +73,36 @@
             <div id="how-to-play-tip">👇 TOUCH & DRAG ANYWHERE<br>喺螢幕任何地方拖曳，即可移動主角！</div>
         </div>
         <canvas id="gameCanvas"></canvas>
+        <canvas id="shareCanvas" width="600" height="315" style="display:none;"></canvas>
         
-        <div class="version-tag">ver. 0.45.5</div>
+        <div class="version-tag">v1.00.2</div>
         
         <div id="game-over-screen">
-            <h1 id="menu-title">SUPER MARIO EVADE</h1>
+            <h1 id="menu-title">SUPER EVADE MASTER</h1>
             <p id="final-score">FINAL SCORE: 0</p>
             <div id="input-area">
                 <label>🔥 GLOBAL HIGH SCORE! ENTER YOUR NAME:</label>
                 <input type="text" id="player-name-input" maxlength="10" placeholder="YOUR NAME">
                 <button id="submit-btn">UPLOAD TO WORLD RANKING</button>
             </div>
-            <div id="leaderboard">
-                <h3>🌍 GLOBAL TOP 100 LEADERBOARD</h3>
-                <div id="leaderboard-rows">LOADING GLOBAL RECORDS...</div>
-            </div>
-            <div class="action-area">
-                <div class="btn-row">
-                    <button id="restart-btn">START GAME 🚀</button>
-                    <button id="share-btn">SHARE RESULT 📢</button>
+            <div id="main-menu-panel">
+                <div id="leaderboard">
+                    <h3>🌍 GLOBAL TOP 100 LEADERBOARD</h3>
+                    <div id="leaderboard-rows">LOADING GLOBAL RECORDS...</div>
                 </div>
-                <div class="coffee-hint">
-                    ☕ 好玩？支持下！Enjoy? Buy me coffee!
+                <div class="action-area">
+                    <div class="btn-row">
+                        <button id="restart-btn">START GAME 🚀</button>
+                        <button id="daily-btn">DAILY 📅</button>
+                        <button id="share-btn">SHARE 📢</button>
+                    </div>
+                    <div class="coffee-hint">
+                        ☕ 好玩？支持下！Enjoy? Buy me coffee!
+                    </div>
+                    <a href="https://www.buymeacoffee.com/phgame_design_creation" target="_blank" class="bmc-btn">
+                        <span class="bmc-icon"></span><span>Buy me a coffee</span>
+                    </a>
                 </div>
-                <a href="https://www.buymeacoffee.com/phgame_design_creation" target="_blank" class="bmc-btn">
-                    <span class="bmc-icon"></span><span>Buy me a coffee</span>
-                </a>
             </div>
         </div>
         <div id="toast-msg">COPIED TO CLIPBOARD! 📋</div>
@@ -106,12 +113,22 @@
         let db = null; let isFirebaseActive = false;
         if (firebaseConfig.apiKey !== "YOUR_API_KEY") { firebase.initializeApp(firebaseConfig); db = firebase.firestore(); isFirebaseActive = true; }
 
+        // --- 每日挑戰專用變數與函數 ---
+        let isDailyChallenge = false;
+        let dailySeed = 0;
+        function getRand() {
+            if (!isDailyChallenge) return Math.random();
+            let x = Math.sin(dailySeed++) * 10000;
+            return x - Math.floor(x);
+        }
+
         const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
         const topBar = document.getElementById('top-bar'); const scoreBoard = document.getElementById('score-board'); const livesBoard = document.getElementById('lives-board');
         const gameOverScreen = document.getElementById('game-over-screen'); const menuTitle = document.getElementById('menu-title'); const finalScoreText = document.getElementById('final-score');
         const restartBtn = document.getElementById('restart-btn'); const shareBtn = document.getElementById('share-btn');
         const countdownScreen = document.getElementById('countdown-screen'); const countdownText = document.getElementById('countdown-text'); const toastMsg = document.getElementById('toast-msg');
         const inputArea = document.getElementById('input-area'); const nameInput = document.getElementById('player-name-input'); const submitBtn = document.getElementById('submit-btn'); const leaderboardRows = document.getElementById('leaderboard-rows');
+        const mainMenuPanel = document.getElementById('main-menu-panel');
 
         const V_WIDTH = 800; const V_HEIGHT = 550; canvas.width = V_WIDTH; canvas.height = V_HEIGHT;
         const playerW = 32; const playerH = 40; const shroomW = 36; const shroomH = 32; 
@@ -158,7 +175,7 @@
             for (let i = 0; i < solidBlocks.length; i++) {
                 let block = solidBlocks[i];
                 if ( playerX < block.x + blockW && playerX + playerW > block.x && playerY < block.y + blockH && playerY + playerH > block.y ) {
-                    if (isInvincibleFromHeart && invulnerableTimer > 0 && !blockHitMap.includes(i)) { blockHitMap.push(i); if (Math.random() < 0.25) spawnHeartItem(block.x + 8); }
+                    if (isInvincibleFromHeart && invulnerableTimer > 0 && !blockHitMap.includes(i)) { blockHitMap.push(i); if (getRand() < 0.25) spawnHeartItem(block.x + 8); }
                     let overlapX1 = (block.x + blockW) - playerX; let overlapX2 = (playerX + playerW) - block.x; let overlapY1 = (block.y + blockH) - playerY; let overlapY2 = (playerY + playerH) - block.y; 
                     let minOverlap = Math.min(overlapX1, overlapX2, overlapY1, overlapY2);
                     if (minOverlap === overlapX1) { playerX = block.x + blockW; } else if (minOverlap === overlapX2) { playerX = block.x - playerW; } else if (minOverlap === overlapY1) { playerY = block.y + blockH; } else if (minOverlap === overlapY2) { playerY = block.y - playerH; }
@@ -168,7 +185,7 @@
 
         function hurtPlayer() { if (invulnerableTimer > 0) return; playerLives--; updateLivesUI(); shakeTimer = 300; shakeIntensity = 10; isInvincibleFromHeart = false; if (playerLives <= 0) { playerLives = 0; endGame(); } else { invulnerableTimer = invulnerableDuration; } }
         function healPlayer() { if (playerLives < 3) { playerLives++; updateLivesUI(); } invulnerableTimer = invulnerableDuration; isInvincibleFromHeart = true; blockHitMap = []; ctx.save(); ctx.fillStyle = "rgba(0, 255, 100, 0.35)"; ctx.fillRect(0, 0, V_WIDTH, V_HEIGHT); ctx.restore(); }
-        function spawnHeartItem(customX = null) { let startX = customX !== null ? customX : (100 + Math.random() * (V_WIDTH - 200)); healHearts.push({ x: startX, y: customX !== null ? playerY - 30 : -heartItemH, vy: 1.6 }); }
+        function spawnHeartItem(customX = null) { let startX = customX !== null ? customX : (100 + getRand() * (V_WIDTH - 200)); healHearts.push({ x: startX, y: customX !== null ? playerY - 30 : -heartItemH, vy: 1.6 }); }
         function updateLivesUI() { let heartStr = ""; for(let i=0; i<3; i++) heartStr += (i < playerLives) ? "❤️" : "🖤"; livesBoard.innerText = heartStr; }
 
         let lastTime = 0; let animationFrameId;
@@ -197,15 +214,15 @@
 
             lastSpawnTime += dt;
             if (lastSpawnTime >= currentSpawnRate) {
-                let direction = Math.floor(Math.random() * 4); let startX, startY;
-                switch(direction) { case 0: startX = Math.random() * (V_WIDTH - shroomW); startY = -shroomH; break; case 1: startX = Math.random() * (V_WIDTH - shroomW); startY = groundY; break; case 2: startX = -shroomW; startY = Math.random() * (groundY - shroomH); break; case 3: default: startX = V_WIDTH; startY = Math.random() * (groundY - shroomH); break; }
+                let direction = Math.floor(getRand() * 4); let startX, startY;
+                switch(direction) { case 0: startX = getRand() * (V_WIDTH - shroomW); startY = -shroomH; break; case 1: startX = getRand() * (V_WIDTH - shroomW); startY = groundY; break; case 2: startX = -shroomW; startY = getRand() * (groundY - shroomH); break; case 3: default: startX = V_WIDTH; startY = getRand() * (groundY - shroomH); break; }
                 let angle = Math.atan2(playerY + (playerH/2) - (shroomH/2) - startY, playerX + (playerW/2) - (shroomW/2) - startX);
                 obstacles.push({ x: startX, y: startY, vx: Math.cos(angle) * currentSpeed, vy: Math.sin(angle) * currentSpeed }); lastSpawnTime = 0;
             }
 
             lastLightningTime += dt;
             if (lastLightningTime >= currentLightningCD) {
-                if (gameLevel >= 5) { let startX = (Math.random() > 0.5 ? 140 : 540) + Math.random() * 40; let startY = 100; let angle = Math.atan2(playerY + (playerH/2) - startY, playerX + (playerW/2) - startX); warningLines.push({ sx: startX, sy: startY, tx: playerX + (playerW/2), ty: playerY + (playerH/2), vx: Math.cos(angle) * currentLightningSpeed, vy: Math.sin(angle) * currentLightningSpeed, timeLeft: 350 }); let levelReduction = (gameLevel - 5) * 150; currentLightningCD = 500 + Math.random() * (Math.max(1200, 4000 - levelReduction) - 500); } lastLightningTime = 0;
+                if (gameLevel >= 5) { let startX = (getRand() > 0.5 ? 140 : 540) + getRand() * 40; let startY = 100; let angle = Math.atan2(playerY + (playerH/2) - startY, playerX + (playerW/2) - startX); warningLines.push({ sx: startX, sy: startY, tx: playerX + (playerW/2), ty: playerY + (playerH/2), vx: Math.cos(angle) * currentLightningSpeed, vy: Math.sin(angle) * currentLightningSpeed, timeLeft: 350 }); let levelReduction = (gameLevel - 5) * 150; currentLightningCD = 500 + getRand() * (Math.max(1200, 4000 - levelReduction) - 500); } lastLightningTime = 0;
             }
 
             for (let i = warningLines.length - 1; i >= 0; i--) { let w = warningLines[i]; w.timeLeft -= dt; if (w.timeLeft <= 0) { lightnings.push({ x: w.sx, y: w.sy, vx: w.vx, vy: w.vy }); warningLines.splice(i, 1); } }
@@ -213,7 +230,8 @@
             for (let i = obstacles.length - 1; i >= 0; i--) { let obs = obstacles[i]; obs.x += obs.vx * timeScale; obs.y += obs.vy * timeScale; if (obs.x < -shroomW - 80 || obs.x > V_WIDTH + 80 || obs.y < -shroomH - 80 || obs.y > groundY + 80) { obstacles.splice(i, 1); continue; } if ( playerX < obs.x + shroomW && playerX + playerW > obs.x && playerY < obs.y + shroomH && playerY + playerH > obs.y ) { hurtPlayer(); obstacles.splice(i, 1); continue; } }
         }
 
-        function checkAndActivateBlocks() { if (gameLevel >= 3 && gameLevel % 3 === 0 && !spawnedLevels.includes(gameLevel)) { let seedX = Math.abs(Math.sin(gameLevel * 12.9898 + 78.233)) * 43758.5453; let targetX = 180 + Math.floor((seedX - Math.floor(seedX)) * 470); let seedY = Math.abs(Math.cos(gameLevel * 45.164 + 12.731)) * 23419.1431; let targetY = 80 + Math.floor((seedY - Math.floor(seedY)) * 280); for (let block of solidBlocks) { if (Math.sqrt(Math.pow(targetX - block.x, 2) + Math.pow(targetY - block.y, 2)) < 85) { targetY += 60; if (targetY > 360) targetY = 80; } } solidBlocks.push({ x: targetX, y: targetY, vx: (0.8 + Math.random() * 0.7) * (Math.random() > 0.5 ? 1 : -1) }); spawnedLevels.push(gameLevel); } }
+        function checkAndActivateBlocks() { if (gameLevel >= 3 && gameLevel % 3 === 0 && !spawnedLevels.includes(gameLevel)) { let seedX = Math.abs(Math.sin(gameLevel * 12.9898 + 78.233)) * 43758.5453; let targetX = 180 + Math.floor((seedX - Math.floor(seedX)) * 470); let seedY = Math.abs(Math.cos(gameLevel * 45.164 + 12.731)) * 23419.1431; let targetY = 80 + Math.floor((seedY - Math.floor(seedY)) * 280); for (let block of solidBlocks) { if (Math.sqrt(Math.pow(targetX - block.x, 2) + Math.pow(targetY - block.y, 2)) < 85) { targetY += 60; if (targetY > 360) targetY = 80; } } solidBlocks.push({ x: targetX, y: targetY, vx: (0.8 + getRand() * 0.7) * (getRand() > 0.5 ? 1 : -1) }); spawnedLevels.push(gameLevel); } }
+        
         function renderGame() {
             ctx.save(); if (shakeTimer > 0) ctx.translate((Math.random() - 0.5) * shakeIntensity, (Math.random() - 0.5) * shakeIntensity);
             ctx.fillStyle = "#5c94fc"; ctx.fillRect(0, 0, V_WIDTH, V_HEIGHT); drawPixelSprite(marioCloudMap, 100, 50, 3); drawPixelSprite(marioCloudMap, 500, 80, 2.5); 
@@ -227,18 +245,221 @@
         }
 
         function getMockLeaderboard() { let local = localStorage.getItem('mario_evade_scores'); return local ? JSON.parse(local) : [ { name: "MARIO", score: 2500, level: 5 }, { name: "LUIGI", score: 1800, level: 4 }, { name: "PEACH", score: 1200, level: 3 }, { name: "BOWSER", score: 600, level: 2 }, { name: "TOAD", score: 200, level: 1 } ]; }
-        async function fetchGlobalScores(highlightId = null) { leaderboardRows.innerHTML = "FETCHING WORLD RECORDS..."; if (isFirebaseActive) { try { const snapshot = await db.collection("leaderboard").orderBy("score", "desc").limit(100).get(); let records = []; snapshot.forEach(doc => records.push({ id: doc.id, ...doc.data() })); records = records.filter(record => record.name && record.score); renderLeaderboardUI(records, highlightId); } catch (e) { console.error("Firebase Error: ", e); renderLeaderboardUI(getMockLeaderboard(), highlightId, true); } } else { renderLeaderboardUI(getMockLeaderboard(), highlightId, true); } }
+        async function fetchGlobalScores(highlightId = null) {
+    leaderboardRows.innerHTML = "FETCHING...";
+    const titleEl = document.querySelector('#leaderboard h3');
+    titleEl.innerText = isDailyChallenge ? "📅 TODAY'S CHALLENGE" : "🌍 GLOBAL TOP 100";
+
+    if (isFirebaseActive) {
+        try {
+            let query = db.collection("leaderboard");
+            
+            if (isDailyChallenge) {
+                // 每日挑戰：一定要有 mode: "daily"
+                query = query.where("mode", "==", "daily");
+            } else {
+                // 普通模式：抓取 mode 為 "normal" 或者根本冇 mode 欄位 (舊數據) 嘅記錄
+                // Firebase 唔支援直接 OR，所以我哋先抓所有，再由程式過濾
+                query = query.orderBy("score", "desc").limit(100);
+            }
+            
+            const snapshot = await query.get();
+            let records = [];
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (isDailyChallenge) {
+                    if (data.mode === "daily") records.push({ id: doc.id, ...data });
+                } else {
+                    // 如果係普通模式，只放入非 daily 的記錄
+                    if (data.mode !== "daily") records.push({ id: doc.id, ...data });
+                }
+            });
+            
+            renderLeaderboardUI(records, highlightId);
+        } catch (e) {
+            console.error("Firebase Error: ", e);
+            renderLeaderboardUI(getMockLeaderboard(), highlightId, true);
+        }
+    } else {
+        renderLeaderboardUI(getMockLeaderboard(), highlightId, true);
+    }
+}
         function renderLeaderboardUI(board, highlightIdOrIndex, isMock = false) { leaderboardRows.innerHTML = ''; if (isMock) { leaderboardRows.innerHTML = `<div style='font-size:10px;color:#ff5252;text-align:center;margin-bottom:4px;'>[OFFLINE MOCK MODE]</div>`; } board.forEach((record, index) => { const isHighlight = isFirebaseActive ? (record.id === highlightIdOrIndex) : (index === highlightIdOrIndex); const row = document.createElement('div'); row.className = `score-row ${isHighlight ? 'highlight' : ''}`; row.innerHTML = ` <span class="score-rank">#${index + 1}</span> <span class="score-name">${record.name}</span> <span class="score-val">${record.score} (Lv.${record.level})</span> `; leaderboardRows.appendChild(row); }); }
 
-        async function endGame() { gameActive = false; isDragging = false; cancelAnimationFrame(animationFrameId); menuTitle.innerText = "GAME OVER"; finalScoreText.innerText = `FINAL SCORE: ${score} (Level ${gameLevel})`; finalScoreText.style.display = 'block'; shareBtn.style.display = 'block'; restartBtn.innerText = "PLAY AGAIN 🔄"; let isHighScore = false; if (isFirebaseActive) { try { const snapshot = await db.collection("leaderboard").orderBy("score", "desc").limit(100).get(); if (snapshot.size < 100 || score > snapshot.docs[snapshot.docs.length - 1].data().score) isHighScore = true; } catch(e) { isHighScore = score > getMockLeaderboard()[4].score; } } else { isHighScore = score > getMockLeaderboard()[4].score; } if (isHighScore) { inputArea.style.display = 'flex'; nameInput.value = ''; setTimeout(() => nameInput.focus(), 100); } else { inputArea.style.display = 'none'; } await fetchGlobalScores(); gameOverScreen.style.display = 'flex'; topBar.style.display = 'none'; }
-        submitBtn.addEventListener('click', async () => { let name = nameInput.value.trim().toUpperCase() || "PLAYER 1"; if (name.length > 10) name = name.substring(0, 10); submitBtn.disabled = true; if (isFirebaseActive) { try { const docRef = await db.collection("leaderboard").add({ name: name, score: score, level: gameLevel, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); inputArea.style.display = 'none'; await fetchGlobalScores(docRef.id); } catch(e) { console.error(e); } } else { let board = getMockLeaderboard(); board.push({ name: name, score: score, level: gameLevel }); board.sort((a, b) => b.score - a.score); board = board.slice(0, 5); localStorage.setItem('mario_evade_scores', JSON.stringify(board)); const newIndex = board.findIndex(r => r.score === score && r.name === name); inputArea.style.display = 'none'; renderLeaderboardUI(board, newIndex, true); } submitBtn.disabled = false; });
-        shareBtn.addEventListener('click', () => { const gameUrl = window.location.href; const shareText = `🍄【Super Mario Evade】全球戰績匯報！\n我剛剛在極限閃避中撐到了 Level ${gameLevel}，奪下 ${score} 分！🏆\n👉 立即挑戰：${gameUrl}`; if (navigator.share) { navigator.share({ title: 'Super Mario Evade', text: shareText, url: gameUrl }).catch(err => console.log(err)); } else { navigator.clipboard.writeText(shareText).then(() => { toastMsg.style.display = 'block'; setTimeout(() => { toastMsg.style.display = 'none'; }, 1500); }).catch(err => alert("Could not copy score: " + err)); } });
+        // --- 遊戲結束及 UI 切換邏輯 ---
+        async function endGame() { 
+            gameActive = false; 
+            isDragging = false; 
+            cancelAnimationFrame(animationFrameId); 
+            menuTitle.innerText = "GAME OVER"; 
+            finalScoreText.innerText = `FINAL SCORE: ${score} (Level ${gameLevel})`; 
+            finalScoreText.style.display = 'block'; 
+            
+            inputArea.style.display = 'none';
+            mainMenuPanel.style.display = 'none';
+
+            let isHighScore = false; 
+            if (isFirebaseActive) { 
+                try { 
+                    const snapshot = await db.collection("leaderboard").orderBy("score", "desc").limit(100).get(); 
+                    if (snapshot.size < 100 || score > snapshot.docs[snapshot.docs.length - 1].data().score) isHighScore = true; 
+                } catch(e) { 
+                    isHighScore = score > getMockLeaderboard()[4].score; 
+                } 
+            } else { 
+                isHighScore = score > getMockLeaderboard()[4].score; 
+            } 
+            
+            if (isHighScore) { 
+                inputArea.style.display = 'flex'; 
+                nameInput.value = ''; 
+                setTimeout(() => nameInput.focus(), 100); 
+            } else { 
+                mainMenuPanel.style.display = 'flex';
+                await fetchGlobalScores(); 
+            } 
+            
+            gameOverScreen.style.display = 'flex'; 
+            topBar.style.display = 'none'; 
+        }
+
+			submitBtn.addEventListener('click', async () => {
+    let name = nameInput.value.trim().toUpperCase() || "PLAYER 1";
+    if (name.length > 10) name = name.substring(0, 10);
+    if (isDailyChallenge) name = name.substring(0, 7) + "(D)";
+    
+    submitBtn.disabled = true;
+    
+    // 建立上傳數據
+    const recordData = {
+        name: name,
+        score: score,
+        level: gameLevel,
+        mode: isDailyChallenge ? "daily" : "normal",
+        date: new Date().toISOString().split('T')[0],
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    if (isFirebaseActive) {
+        try {
+            const docRef = await db.collection("leaderboard").add(recordData);
+            inputArea.style.display = 'none';
+            mainMenuPanel.style.display = 'flex';
+            // 成功上傳後重新讀取
+            await fetchGlobalScores(docRef.id);
+        } catch(e) {
+            console.error("上傳失敗:", e);
+            alert("上傳失敗，請檢查網路連線");
+        }
+    } else {
+        // Mock 模式邏輯
+        let board = getMockLeaderboard();
+        board.push(recordData);
+        board.sort((a, b) => b.score - a.score);
+        board = board.slice(0, 5);
+        localStorage.setItem('mario_evade_scores', JSON.stringify(board));
+        inputArea.style.display = 'none';
+        mainMenuPanel.style.display = 'flex';
+        renderLeaderboardUI(board, -1, true);
+    }
+    submitBtn.disabled = false;
+});
+
+        // --- 生成戰報圖片及分享功能 ---
+        async function generateShareImage() {
+            const sc = document.getElementById('shareCanvas');
+            const sctx = sc.getContext('2d');
+            sctx.fillStyle = "#5c94fc"; sctx.fillRect(0, 0, 600, 315);
+            
+            sctx.fillStyle = "#ffffff"; 
+            sctx.font = "bold 35px 'Courier New'";
+            sctx.textAlign = "center"; 
+            let titleText = isDailyChallenge ? "SUPER EVADE MASTER - DAILY" : "SUPER EVADE MASTER";
+            sctx.fillText(titleText, 300, 70);
+            
+            let rankStr = score < 500 ? "Beginner" : score < 2000 ? "Pro Evader" : "Legendary";
+            sctx.fillStyle = "#ffd700"; 
+            sctx.font = "bold 55px 'Courier New'";
+            sctx.fillText(`SCORE: ${score}`, 300, 160);
+            
+            sctx.fillStyle = "#ffffff";
+            sctx.font = "bold 25px 'Courier New'";
+            sctx.fillText(`Rank: ${rankStr} (Lv.${gameLevel})`, 300, 220);
+            
+            return new Promise((resolve) => {
+                sc.toBlob((blob) => { resolve(new File([blob], "score_report.png", { type: "image/png" })); });
+            });
+        }
+
+        shareBtn.addEventListener('click', async () => { 
+            const gameUrl = window.location.href; 
+            const modeText = isDailyChallenge ? "【每日挑戰】" : "【全球戰績匯報】";
+            const shareText = `👾 SUPER EVADE MASTER ${modeText}\n我剛剛在極限閃避中撐到了 Level ${gameLevel}，奪下 ${score} 分！🏆\n👉 立即挑戰：${gameUrl}`; 
+            
+            try {
+                const file = await generateShareImage();
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'SUPER EVADE MASTER',
+                        text: shareText
+                    }).catch(err => console.log("User canceled share"));
+                } else {
+                    fallbackShare(shareText);
+                }
+            } catch(e) {
+                fallbackShare(shareText);
+            }
+        });
+
+        function fallbackShare(text) {
+            if (navigator.share) { 
+                navigator.share({ title: 'SUPER EVADE MASTER', text: text }).catch(err => console.log(err)); 
+            } else { 
+                navigator.clipboard.writeText(text).then(() => { 
+                    toastMsg.style.display = 'block'; 
+                    setTimeout(() => { toastMsg.style.display = 'none'; }, 1500); 
+                }).catch(err => alert("Could not copy score: " + err)); 
+            }
+        }
 
         function startCountdown() { isCountingDown = true; gameActive = false; isDragging = false; countdownScreen.style.display = 'flex'; topBar.style.display = 'flex'; let count = 3; countdownText.innerText = "READY?"; let timer = setInterval(() => { if (count > 0) { countdownText.innerText = count; count--; } else { clearInterval(timer); countdownScreen.style.display = 'none'; isCountingDown = false; gameActive = true; } }, 800); }
-        function initGame() { if (isFirstLoad) { fetchGlobalScores(); isFirstLoad = false; renderGame(); return; } score = 0; rawScore = 0; gameLevel = 1; levelTimer = 0; lastSpawnTime = 0; lastLightningTime = 0; playerLives = 3; invulnerableTimer = 0; currentSpeed = baseSpeed; currentSpawnRate = baseSpawnRate; currentLightningSpeed = baseLightningSpeed; currentLightningCD = 2000; isSlowed = false; shakeTimer = 0; playerAnimTimer = 0; playerFrame = 0; obstacles = []; lightnings = []; solidBlocks = []; warningLines = []; spawnedLevels = []; isDragging = false; healHearts = []; heartSpawnTimer = 0; currentHeartCD = 30000; heartBlinkState = 0; isInvincibleFromHeart = false; blockHitMap = []; checkAndActivateBlocks(); scoreBoard.innerText = "SCORE: 0 (Level 1)"; updateLivesUI(); gameOverScreen.style.display = 'none'; playerX = 100; playerY = groundY - playerH; lastTime = 0; cancelAnimationFrame(animationFrameId); requestAnimationFrame(gameTick); startCountdown(); }
-        restartBtn.addEventListener('click', () => { if (gameOverScreen.style.display !== 'none') { isFirstLoad = false; initGame(); } });
+        
+        function initGame() { 
+            if (isFirstLoad) { 
+                fetchGlobalScores(); 
+                isFirstLoad = false; 
+                renderGame(); 
+                mainMenuPanel.style.display = 'flex';
+                return; 
+            } 
+            score = 0; rawScore = 0; gameLevel = 1; levelTimer = 0; lastSpawnTime = 0; lastLightningTime = 0; playerLives = 3; invulnerableTimer = 0; currentSpeed = baseSpeed; currentSpawnRate = baseSpawnRate; currentLightningSpeed = baseLightningSpeed; currentLightningCD = 2000; isSlowed = false; shakeTimer = 0; playerAnimTimer = 0; playerFrame = 0; obstacles = []; lightnings = []; solidBlocks = []; warningLines = []; spawnedLevels = []; isDragging = false; healHearts = []; heartSpawnTimer = 0; currentHeartCD = 30000; heartBlinkState = 0; isInvincibleFromHeart = false; blockHitMap = []; 
+            
+            // 重置種子，確保每日挑戰中死後再玩，路線一模一樣
+            if (isDailyChallenge) {
+                const d = new Date();
+                dailySeed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+            }
+
+            checkAndActivateBlocks(); scoreBoard.innerText = "SCORE: 0 (Level 1)"; updateLivesUI(); gameOverScreen.style.display = 'none'; playerX = 100; playerY = groundY - playerH; lastTime = 0; cancelAnimationFrame(animationFrameId); requestAnimationFrame(gameTick); startCountdown(); 
+        }
+        
+        restartBtn.addEventListener('click', () => { 
+            isDailyChallenge = false;
+            if (gameOverScreen.style.display !== 'none') { isFirstLoad = false; initGame(); } 
+        });
+
+        const dailyBtn = document.getElementById('daily-btn');
+        dailyBtn.addEventListener('click', () => {
+            isDailyChallenge = true;
+            if (gameOverScreen.style.display !== 'none') {
+                isFirstLoad = false;
+                initGame();
+            }
+        });
+        
         initGame();
     </script>
 </body>
-</html>
 </html>
