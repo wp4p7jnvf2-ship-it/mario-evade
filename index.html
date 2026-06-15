@@ -87,8 +87,12 @@
             </div>
             <div id="main-menu-panel">
                 <div id="leaderboard">
-                    <h3>🌍 GLOBAL TOP 100 LEADERBOARD</h3>
-                    <div id="leaderboard-rows">LOADING GLOBAL RECORDS...</div>
+                    <div style="display: flex; justify-content: font-weight; align-items: center; background: rgba(0,239,255,0.2); padding: 5px 8px; border-radius: 3px; margin-bottom: 4px; position: relative; min-height: 24px;">
+                        <h3 id="leaderboard-title" style="margin: 0; color: #00efff; font-size: 13px; text-shadow: 1px 1px 0 #000; position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap;">🌍 GLOBAL TOP 100</h3>
+                        
+                        <button id="toggle-board-btn" style="margin-left: auto; background: none; color: #fff; border: none; font-size: 14px; cursor: pointer; padding: 2px 4px; font-family: inherit; line-height: 1; transition: transform 0.1s;" onmousedown="this.style.transform='scale(0.85)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">🔄</button>
+                    </div>
+                    <div id="leaderboard-rows">LOADING RECORDS...</div>
                 </div>
                 <div class="action-area">
                     <div class="btn-row">
@@ -109,6 +113,7 @@
     </div>
 
     <script>
+
         const firebaseConfig = { apiKey: "AIzaSyASkvJHY0ptw1VjbbEeCFy35_CzgNrtf4I", authDomain: "phdesign-b0e40.firebaseapp.com", projectId: "phdesign-b0e40", storageBucket: "phdesign-b0e40.firebasestorage.app", messagingSenderId: "365690247", appId: "1:365690247:web:485f4ce82df0e57a8e2722", measurementId: "G-3SQFQK9D6H" };
         let db = null; let isFirebaseActive = false;
         if (firebaseConfig.apiKey !== "YOUR_API_KEY") { firebase.initializeApp(firebaseConfig); db = firebase.firestore(); isFirebaseActive = true; }
@@ -247,9 +252,12 @@
         function getMockLeaderboard() { let local = localStorage.getItem('mario_evade_scores'); return local ? JSON.parse(local) : [ { name: "MARIO", score: 2500, level: 5 }, { name: "LUIGI", score: 1800, level: 4 }, { name: "PEACH", score: 1200, level: 3 }, { name: "BOWSER", score: 600, level: 2 }, { name: "TOAD", score: 200, level: 1 } ]; }
 async function fetchGlobalScores(highlightId = null) {
             leaderboardRows.innerHTML = "FETCHING RECORDS...";
-            const titleEl = document.querySelector('#leaderboard h3');
-            titleEl.innerText = isDailyChallenge ? "📅 TODAY'S CHALLENGE" : "🌍 GLOBAL TOP 100";
-
+            
+            // ⚡ 確保切換時，頂部標題文字會隨狀態即時變更
+            const titleEl = document.getElementById('leaderboard-title');
+            if (titleEl) {
+                titleEl.innerText = isDailyChallenge ? "📅 TODAY'S CHALLENGE" : "🌍 GLOBAL TOP 100";
+            }
             if (isFirebaseActive) {
                 try {
                     let query = db.collection("leaderboard");
@@ -462,7 +470,20 @@ async function endGame() {
             isDailyChallenge = false;
             if (gameOverScreen.style.display !== 'none') { isFirstLoad = false; initGame(); } 
         });
-
+// ⚡ 全球榜與每日榜的任意切換按鍵邏輯
+        const toggleBoardBtn = document.getElementById('toggle-board-btn');
+        if (toggleBoardBtn) {
+            toggleBoardBtn.addEventListener('click', async (e) => {
+                // 阻止事件冒泡，防止觸發遊戲點擊
+                e.stopPropagation(); 
+                
+                // 任意反轉目前的挑戰狀態
+                isDailyChallenge = !isDailyChallenge; 
+                
+                // 重新向 Firebase 抓取對應的排行榜數據
+                await fetchGlobalScores(); 
+            });
+        }
         const dailyBtn = document.getElementById('daily-btn');
         dailyBtn.addEventListener('click', () => {
             isDailyChallenge = true;
