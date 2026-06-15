@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SUPER EVADE MASTER (v1.00.2 - Daily Challenge)</title>
+    <title>SUPER EVADE MASTER (v1.00.3 - Daily Challenge)</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
@@ -75,7 +75,7 @@
         <canvas id="gameCanvas"></canvas>
         <canvas id="shareCanvas" width="600" height="315" style="display:none;"></canvas>
         
-        <div class="version-tag">v1.00.2</div>
+        <div class="version-tag">v1.00.3</div>
         
         <div id="game-over-screen">
             <h1 id="menu-title">SUPER EVADE MASTER</h1>
@@ -245,119 +245,139 @@
         }
 
         function getMockLeaderboard() { let local = localStorage.getItem('mario_evade_scores'); return local ? JSON.parse(local) : [ { name: "MARIO", score: 2500, level: 5 }, { name: "LUIGI", score: 1800, level: 4 }, { name: "PEACH", score: 1200, level: 3 }, { name: "BOWSER", score: 600, level: 2 }, { name: "TOAD", score: 200, level: 1 } ]; }
-        async function fetchGlobalScores(highlightId = null) {
-    leaderboardRows.innerHTML = "FETCHING...";
-    const titleEl = document.querySelector('#leaderboard h3');
-    titleEl.innerText = isDailyChallenge ? "📅 TODAY'S CHALLENGE" : "🌍 GLOBAL TOP 100";
+async function fetchGlobalScores(highlightId = null) {
+            leaderboardRows.innerHTML = "FETCHING RECORDS...";
+            const titleEl = document.querySelector('#leaderboard h3');
+            titleEl.innerText = isDailyChallenge ? "📅 TODAY'S CHALLENGE" : "🌍 GLOBAL TOP 100";
 
-    if (isFirebaseActive) {
-        try {
-            let query = db.collection("leaderboard");
-            
-            // 關鍵修改：先抓取模式對應的記錄，並強制按分數高低排序
-            // 如果你之前建立過 Index，這裏要保證欄位完全吻合
-            if (isDailyChallenge) {
-                query = query.where("mode", "==", "daily");
+            if (isFirebaseActive) {
+                try {
+                    let query = db.collection("leaderboard");
+                    let records = [];
+
+                    if (isDailyChallenge) {
+                        // 📅 每日挑戰榜：使用強效本地日期轉換，補齊前導零，確保上傳與讀取 100% 同步
+                        const d = new Date();
+                        const offset = d.getTimezoneOffset();
+                        const localTime = new Date(d.getTime() - (offset * 60 * 1000));
+                        const todayStr = localTime.toISOString().split('T')[0]; // 確保格式永遠是 "YYYY-MM-DD"
+
+                        query = query.where("mode", "==", "daily").where("date", "==", todayStr).orderBy("score", "desc").limit(100);
+                        const snapshot = await query.get();
+                        snapshot.forEach(doc => records.push({ id: doc.id, ...doc.data() }));
+                    } else {
+                        // 🌍 全球普通榜：完美相容歷史舊數據的前端過濾
+                        query = query.orderBy("score", "desc").limit(150); 
+                        const snapshot = await query.get();
+                        
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+                            if (data.mode !== "daily" && records.length < 100) {
+                                records.push({ id: doc.id, ...data });
+                            }
+                        });
+                    }
+                    renderLeaderboardUI(records, highlightId);
+                } catch (e) {
+                    console.error("Firebase Error: ", e);
+                    renderLeaderboardUI(getMockLeaderboard(), highlightId, true);
+                }
             } else {
-                // 如果是普通模式，我們抓取所有 mode 為 normal 的
-                // 為了兼容舊數據，這裡如果你有大量舊數據，建議一律統一改為 mode: "normal"
-                query = query.where("mode", "==", "normal");
+                renderLeaderboardUI(getMockLeaderboard(), highlightId, true);
             }
-            
-            // 強制分數排序
-            const snapshot = await query.orderBy("score", "desc").limit(100).get();
-            let records = [];
-            snapshot.forEach(doc => records.push({ id: doc.id, ...doc.data() }));
-            renderLeaderboardUI(records, highlightId);
-            
-        } catch (e) {
-            console.error("Firebase Error: ", e);
-            renderLeaderboardUI(getMockLeaderboard(), highlightId, true);
         }
-    } else {
-        renderLeaderboardUI(getMockLeaderboard(), highlightId, true);
-    }
-}
         function renderLeaderboardUI(board, highlightIdOrIndex, isMock = false) { leaderboardRows.innerHTML = ''; if (isMock) { leaderboardRows.innerHTML = `<div style='font-size:10px;color:#ff5252;text-align:center;margin-bottom:4px;'>[OFFLINE MOCK MODE]</div>`; } board.forEach((record, index) => { const isHighlight = isFirebaseActive ? (record.id === highlightIdOrIndex) : (index === highlightIdOrIndex); const row = document.createElement('div'); row.className = `score-row ${isHighlight ? 'highlight' : ''}`; row.innerHTML = ` <span class="score-rank">#${index + 1}</span> <span class="score-name">${record.name}</span> <span class="score-val">${record.score} (Lv.${record.level})</span> `; leaderboardRows.appendChild(row); }); }
 
         // --- 遊戲結束及 UI 切換邏輯 ---
-        async function endGame() { 
+async function endGame() { 
             gameActive = false; 
             isDragging = false; 
             cancelAnimationFrame(animationFrameId); 
-            menuTitle.innerText = "GAME OVER"; 
+            menuTitle.innerText = isDailyChallenge ? "DAILY COMPLETED" : "SUPER EVADE MASTER"; 
             finalScoreText.innerText = `FINAL SCORE: ${score} (Level ${gameLevel})`; 
             finalScoreText.style.display = 'block'; 
-            
-            inputArea.style.display = 'none';
+            inputArea.style.display = 'none'; 
             mainMenuPanel.style.display = 'none';
 
             let isHighScore = false; 
             if (isFirebaseActive) { 
                 try { 
-                    const snapshot = await db.collection("leaderboard").orderBy("score", "desc").limit(100).get(); 
-                    if (snapshot.size < 100 || score > snapshot.docs[snapshot.docs.length - 1].data().score) isHighScore = true; 
-                } catch(e) { 
-                    isHighScore = score > getMockLeaderboard()[4].score; 
-                } 
-            } else { 
-                isHighScore = score > getMockLeaderboard()[4].score; 
-            } 
+                    let query = db.collection("leaderboard");
+                    let currentLowScore = 0;
+                    
+                    if (isDailyChallenge) {
+                        // 📅 同步採用本地安全日期查詢
+                        const d = new Date();
+                        const offset = d.getTimezoneOffset();
+                        const localTime = new Date(d.getTime() - (offset * 60 * 1000));
+                        const todayStr = localTime.toISOString().split('T')[0];
+
+                        query = query.where("mode", "==", "daily").where("date", "==", todayStr).orderBy("score", "desc").limit(100);
+                        const snapshot = await query.get();
+                        if (snapshot.size < 100 || score > snapshot.docs[snapshot.docs.length - 1].data().score) isHighScore = true;
+                    } else {
+                        query = query.orderBy("score", "desc").limit(150);
+                        const snapshot = await query.get();
+                        let normalCount = 0;
+                        snapshot.forEach(doc => {
+                            if (doc.data().mode !== "daily") {
+                                normalCount++;
+                                currentLowScore = doc.data().score;
+                            }
+                        });
+                        if (normalCount < 100 || score > currentLowScore) isHighScore = true;
+                    }
+                } catch(e) { isHighScore = score > getMockLeaderboard()[4].score; } 
+            } else { isHighScore = score > getMockLeaderboard()[4].score; } 
             
             if (isHighScore) { 
                 inputArea.style.display = 'flex'; 
                 nameInput.value = ''; 
                 setTimeout(() => nameInput.focus(), 100); 
             } else { 
-                mainMenuPanel.style.display = 'flex';
+                mainMenuPanel.style.display = 'flex'; 
                 await fetchGlobalScores(); 
             } 
-            
             gameOverScreen.style.display = 'flex'; 
             topBar.style.display = 'none'; 
         }
 
-			submitBtn.addEventListener('click', async () => {
-    let name = nameInput.value.trim().toUpperCase() || "PLAYER 1";
-    if (name.length > 10) name = name.substring(0, 10);
-    if (isDailyChallenge) name = name.substring(0, 7) + "(D)";
-    
-    submitBtn.disabled = true;
-    
-    // 建立上傳數據
-    const recordData = {
-        name: name,
-        score: score,
-        level: gameLevel,
-        mode: isDailyChallenge ? "daily" : "normal",
-        date: new Date().toISOString().split('T')[0],
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    };
+			submitBtn.addEventListener('click', async () => { 
+            let name = nameInput.value.trim().toUpperCase() || "AAA"; 
+            if (name.length > 10) name = name.substring(0, 10); 
+            if (isDailyChallenge) name = name.substring(0, 7) + "(D)";
+            submitBtn.disabled = true; 
+            
+            // 📅 獲取本地日期字串 (避免格林威治時差 Bug)
+            const d = new Date();
+            const offset = d.getTimezoneOffset();
+            const localTime = new Date(d.getTime() - (offset * 60 * 1000));
+            const todayStr = localTime.toISOString().split('T')[0];
 
-    if (isFirebaseActive) {
-        try {
-            const docRef = await db.collection("leaderboard").add(recordData);
-            inputArea.style.display = 'none';
-            mainMenuPanel.style.display = 'flex';
-            // 成功上傳後重新讀取
-            await fetchGlobalScores(docRef.id);
-        } catch(e) {
-            console.error("上傳失敗:", e);
-            alert("上傳失敗，請檢查網路連線");
-        }
-    } else {
-        // Mock 模式邏輯
-        let board = getMockLeaderboard();
-        board.push(recordData);
-        board.sort((a, b) => b.score - a.score);
-        board = board.slice(0, 5);
-        localStorage.setItem('mario_evade_scores', JSON.stringify(board));
-        inputArea.style.display = 'none';
-        mainMenuPanel.style.display = 'flex';
-        renderLeaderboardUI(board, -1, true);
-    }
-    submitBtn.disabled = false;
-});
+            const recordData = {
+                name: name,
+                score: score,
+                level: gameLevel,
+                mode: isDailyChallenge ? "daily" : "normal",
+                date: todayStr, // ⚡ 寫入精準本地當天日期
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (isFirebaseActive) { 
+                try { 
+                    const docRef = await db.collection("leaderboard").add(recordData); 
+                    inputArea.style.display = 'none'; 
+                    mainMenuPanel.style.display = 'flex';
+                    await fetchGlobalScores(docRef.id); 
+                } catch(e) { console.error(e); } 
+            } else { 
+                let board = getMockLeaderboard(); board.push(recordData); board.sort((a, b) => b.score - a.score); board = board.slice(0, 5); 
+                localStorage.setItem('mario_evade_scores', JSON.stringify(board)); 
+                inputArea.style.display = 'none'; mainMenuPanel.style.display = 'flex';
+                renderLeaderboardUI(board, board.findIndex(r => r.score === score), true); 
+            } 
+            submitBtn.disabled = false; 
+        });
 
         // --- 生成戰報圖片及分享功能 ---
         async function generateShareImage() {
