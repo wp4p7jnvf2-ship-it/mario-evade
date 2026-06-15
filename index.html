@@ -254,29 +254,22 @@
         try {
             let query = db.collection("leaderboard");
             
+            // 關鍵修改：先抓取模式對應的記錄，並強制按分數高低排序
+            // 如果你之前建立過 Index，這裏要保證欄位完全吻合
             if (isDailyChallenge) {
-                // 每日挑戰：一定要有 mode: "daily"
                 query = query.where("mode", "==", "daily");
             } else {
-                // 普通模式：抓取 mode 為 "normal" 或者根本冇 mode 欄位 (舊數據) 嘅記錄
-                // Firebase 唔支援直接 OR，所以我哋先抓所有，再由程式過濾
-                query = query.orderBy("score", "desc").limit(100);
+                // 如果是普通模式，我們抓取所有 mode 為 normal 的
+                // 為了兼容舊數據，這裡如果你有大量舊數據，建議一律統一改為 mode: "normal"
+                query = query.where("mode", "==", "normal");
             }
             
-            const snapshot = await query.get();
+            // 強制分數排序
+            const snapshot = await query.orderBy("score", "desc").limit(100).get();
             let records = [];
-            
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                if (isDailyChallenge) {
-                    if (data.mode === "daily") records.push({ id: doc.id, ...data });
-                } else {
-                    // 如果係普通模式，只放入非 daily 的記錄
-                    if (data.mode !== "daily") records.push({ id: doc.id, ...data });
-                }
-            });
-            
+            snapshot.forEach(doc => records.push({ id: doc.id, ...doc.data() }));
             renderLeaderboardUI(records, highlightId);
+            
         } catch (e) {
             console.error("Firebase Error: ", e);
             renderLeaderboardUI(getMockLeaderboard(), highlightId, true);
