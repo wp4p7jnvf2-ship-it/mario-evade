@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Super Evade Master - Edition v2.00.9</title>
+    <title>Super Evade Master - Ultimate Complete v2.01.2</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         /* 🎨 完美馬力歐復古深藍與極簡像素排版 */
         html, body { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; position: fixed; background-color: #0f1c33; font-family: 'Courier New', Courier, monospace; color: white; display: flex; justify-content: center; align-items: center; touch-action: none; -webkit-user-select: none; user-select: none; box-sizing: border-box; }
         
-        /* 📱 響應式核心：確保在手機或 iPad 等直屏畫面上，永遠等比例完美縮放，絕不裁切左右兩邊 */
+        /* 📱 響應式核心：等比例完美縮放，絕不裁切左右兩邊 */
         #game-container { position: relative; width: 100vw; max-width: 800px; aspect-ratio: 800 / 550; background-color: #1a3053; border: 4px solid #111; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; box-sizing: border-box; }
         
         @media (max-aspect-ratio: 800/550) { #game-container { width: 96vw; height: auto; } }
@@ -20,7 +20,7 @@
         
         .version-tag { position: absolute; bottom: 8px; right: 12px; font-size: 11px; color: rgba(255, 255, 255, 0.2); font-weight: bold; z-index: 100; pointer-events: none; }
         
-        /* 📱 優化手機端分數頂欄排版：安全安全邊距 */
+        /* 📱 優化手機/電腦端頂欄邊距 */
         #top-bar { position: absolute; top: 12px; left: 15px; right: 12px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; display: none; box-sizing: border-box; width: calc(100% - 27px); }
         #score-board { font-size: 16px; font-weight: bold; text-shadow: 2px 2px 0 #000; color: #ffffff; letter-spacing: 1px; }
         #lives-board { font-size: 16px; font-weight: bold; text-shadow: 2px 2px 0 #000; color: #ffd700; }
@@ -38,7 +38,7 @@
         @media (min-width: 600px) { #game-over-screen h1 { font-size: 48px; } }
         
         #sub-header-title { font-size: 14px; color: #ffffff; font-weight: bold; margin: 4px 0 10px 0; text-shadow: 2px 2px 0 #000; letter-spacing: 1px; }
-        #final-score { font-size: 15px; color: #ffd700; margin: 0 0 10px 0; text-shadow: 2px 2px 0 #000; display: none; font-weight: bold; }
+        #final-score { font-size: 16px; color: #ffd700; margin: 0 0 12px 0; text-shadow: 2px 2px 0 #000; display: none; font-weight: bold; }
         
         #input-area { display: none; flex-direction: column; align-items: center; margin-bottom: 6px; width: 90%; max-width: 300px; }
         #input-area label { font-size: 11px; color: #ffffff; margin-bottom: 4px; text-align: center; font-weight: bold; text-shadow: 1px 1px 0 #000; }
@@ -47,7 +47,6 @@
         
         #main-menu-panel { display: none; flex-direction: column; align-items: center; width: 100%; }
         
-        /* 📱 排行榜面板自適應 */
         #leaderboard { width: 95%; max-width: 420px; background: transparent; padding: 0px 6px; margin-bottom: 10px; box-sizing: border-box; height: 38vh; max-height: 170px; overflow-y: auto; }
         #leaderboard::-webkit-scrollbar { width: 5px; } #leaderboard::-webkit-scrollbar-track { background: transparent; } #leaderboard::-webkit-scrollbar-thumb { background: #e52521; }
         
@@ -69,7 +68,8 @@
         
         .coffee-hint { font-size: 10px; color: #a2b4cd; text-align: center; margin-top: 2px; text-shadow: 1px 1px 0 #000; }
         .bmc-btn { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 4px 8px; font-size: 10px; font-weight: bold; color: #000; background-color: #ffd700; border: 2px solid #fff; border-radius: 4px; cursor: pointer; text-decoration: none; font-family: inherit; box-sizing: border-box; }
-        #toast-msg { position: absolute; bottom: 20px; background: #e52521; color: white; padding: 6px 15px; font-weight: bold; font-size: 13px; display: none; z-index: 300; box-shadow: 0 0 10px #000; }
+        
+        #toast-msg { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: #e52521; color: white; padding: 8px 20px; font-weight: bold; font-size: 13px; display: none; z-index: 300; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.6); white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -85,11 +85,11 @@
         <canvas id="gameCanvas"></canvas>
         <canvas id="shareCanvas" width="600" height="315" style="display:none;"></canvas>
         
-        <div class="version-tag">v2.00.9</div>
+        <div class="version-tag">v2.01.2</div>
         
         <div id="game-over-screen">
             <h1 id="menu-title">SUPER EVADE MASTER</h1>
-            <div id="sub-header-title">DAILY COMPLETED</div>
+            <div id="sub-header-title">ARCADE MODE</div>
             <p id="final-score">FINAL SCORE: 0</p>
             <div id="input-area">
                 <label>🔥 HIGH SCORE DETECTED! ENTER ARCADE NAME:</label>
@@ -122,7 +122,7 @@
 
     <script>
         // ====================================================
-        // 第一區：基礎資源色彩與【全新復刻像素矩陣庫】
+        // 第一區：基礎資源色彩與像素庫
         // ====================================================
         const Bl = "#000000"; const Wh = "#ffffff"; const Rd = "#ff1a40"; const Gy = "#8e9aaf"; 
         const Dk = "#1f2937"; const Or = "#f97316"; const Pk = "#f472b6"; const Cy = "#22d3ee";
@@ -131,103 +131,13 @@
         const K = Bl;
 
         // 🥷 核心武士/忍者
-        const vibeBoyFrame0 = [
-            [_,_,_,Bl,Bl,Bl,Bl,Bl,_,_,_,_],
-            [_,_,Bl,Dk,Dk,Dk,Dk,Dk,Bl,_,_,_],
-            [_,Bl,Dk,Dk,Dk,Dk,Dk,Dk,Dk,Bl,_,_],
-            [_,Bl,Dk,Bl,Wh,Dk,Bl,Wh,Dk,Bl,_,_],
-            [_,Bl,Dk,Bl,Bl,Dk,Bl,Bl,Dk,Bl,_,_],
-            [_,Bl,Dk,Dk,Rd,Rd,Rd,Dk,Dk,Bl,_,_], 
-            [Bl,Dk,Bl,Dk,Dk,Dk,Dk,Dk,Bl,Dk,Bl,_],
-            [Bl,Rd,Rd,Bl,Dk,Dk,Dk,Bl,Gy,Gy,Gy,Bl], 
-            [_,Bl,Bl,Bl,Rd,Rd,Rd,Bl,Bl,Bl,Bl,_],
-            [_,_,_,Bl,Dk,Dk,Dk,Bl,_,_,_,_],
-            [_,_,_,Bl,Dk,Dk,Dk,Bl,_,_,_,_],
-            [_,_,Bl,Dk,Bl,_,Bl,Dk,Bl,_,_,_],
-            [_,_,Bl,Rd,Bl,_,Bl,Rd,Bl,_,_,_]
-        ];
-        
-        // ⚡⚡⚡ 【終極拼寫修復點】：把拼錯的 _Bl 修正為正確的 _, Bl 分開宣告，徹底解凍卡死！
-        const vibeBoyFrame1 = [
-            [_,_,_,Bl,Bl,Bl,Bl,Bl,_,_,_,_],
-            [_,_,Bl,Dk,Dk,Dk,Dk,Dk,Bl,_,_,_],
-            [_,Bl,Dk,Dk,Dk,Dk,Dk,Dk,Dk,Bl,_,_],
-            [_,Bl,Dk,Bl,Wh,Dk,Bl,Wh,Dk,Bl,_,_],
-            [_,Bl,Dk,Bl,Bl,Dk,Bl,Bl,Dk,Bl,_,_],
-            [_,Bl,Dk,Dk,Rd,Rd,Rd,Dk,Dk,Bl,_,_],
-            [Bl,Dk,Bl,Dk,Dk,Dk,Dk,Dk,Bl,Dk,Bl,_],
-            [Bl,Rd,Rd,Bl,Dk,Dk,Dk,Bl,_,Bl,Bl,_],
-            [_,Bl,Bl,Bl,Rd,Rd,Rd,Bl,_,Bl,Gy,Bl], 
-            [_,_,_,Bl,Dk,Dk,Dk,Bl,_,_,Bl,Gy,Bl],
-            [_,_,_,Bl,Dk,Dk,Dk,Bl,_,_,_,Bl,_],
-            [_,_,Bl,Dk,Bl,_,Bl,Dk,Bl,_,_,_],
-            [_,_,Bl,Rd,Bl,_,Bl,Rd,Bl,_,_,_]
-        ];
+        const vibeBoyFrame0 = [[_,_,_,Bl,Bl,Bl,Bl,Bl,_,_,_,_],[_,_,Bl,Dk,Dk,Dk,Dk,Dk,Bl,_,_,_],[_,Bl,Dk,Dk,Dk,Dk,Dk,Dk,Dk,Bl,_,_],[_,Bl,Dk,Bl,Wh,Dk,Bl,Wh,Dk,Bl,_,_],[_,Bl,Dk,Bl,Bl,Dk,Bl,Bl,Dk,Bl,_,_],[_,Bl,Dk,Dk,Rd,Rd,Rd,Dk,Dk,Bl,_,_],[Bl,Dk,Bl,Dk,Dk,Dk,Dk,Dk,Bl,Dk,Bl,_],[Bl,Rd,Rd,Bl,Dk,Dk,Dk,Bl,Gy,Gy,Gy,Bl],[_,Bl,Bl,Bl,Rd,Rd,Rd,Bl,Bl,Bl,Bl,_],[_,_,_,Bl,Dk,Dk,Dk,Bl,_,_,_,_],[_,_,_,Bl,Dk,Dk,Dk,Bl,_,_,_,_],[_,_,Bl,Dk,Bl,_,Bl,Dk,Bl,_,_,_],[_,_,Bl,Rd,Bl,_,Bl,Rd,Bl,_,_,_]];
+        const vibeBoyFrame1 = [[_,_,_,Bl,Bl,Bl,Bl,Bl,_,_,_,_],[_,_,Bl,Dk,Dk,Dk,Dk,Dk,Bl,_,_,_],[_,Bl,Dk,Dk,Dk,Dk,Dk,Dk,Dk,Bl,_,_],[_,Bl,Dk,Bl,Wh,Dk,Bl,Wh,Dk,Bl,_,_],[_,Bl,Dk,Bl,Bl,Dk,Bl,Bl,Dk,Bl,_,_],[_,Bl,Dk,Dk,Rd,Rd,Rd,Dk,Dk,Bl,_,_],[Bl,Dk,Bl,Dk,Dk,Dk,Dk,Dk,Bl,Dk,Bl,_],[Bl,Rd,Rd,Bl,Dk,Dk,Dk,Bl,_,Bl,Bl,_],[_,Bl,Bl,Bl,Rd,Rd,Rd,Bl,_,Bl,Gy,Bl],[_,_,_,Bl,Dk,Dk,Dk,Bl,_,_,Bl,Gy,Bl],[_,_,_,Bl,Dk,Dk,Dk,Bl,_,_,_,Bl,_],[_,_,Bl,Dk,Bl,_,Bl,Dk,Bl,_,_,_],[_,_,Bl,Rd,Bl,_,Bl,Rd,Bl,_,_,_]];
         const vibeBoyFrames = [vibeBoyFrame0, vibeBoyFrame1];
-
-        // 👾 紅色小幽靈 (Pacman Ghost)
-        const realShroomMap = [
-            [_,_,_,_,Bl,Bl,Bl,Bl,_,_,_,_],
-            [_,_,Bl,Bl,Rd,Rd,Rd,Rd,Bl,Bl,_,_],
-            [_,Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl,_],
-            [Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],
-            [Bl,Rd,Bl,Wh,Rd,Rd,Rd,Bl,Wh,Rd,Rd,Bl], 
-            [Bl,Rd,Bl,Bl,Rd,Rd,Rd,Bl,Bl,Rd,Rd,Bl],
-            [Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],
-            [Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],
-            [Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],
-            [Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],
-            [Bl,Rd,Bl,Rd,Bl,Rd,Bl,Rd,Bl,Rd,Rd,Bl], 
-            [_,Bl,_,Bl,_,Bl,_,Bl,_,Bl,Bl,_]
-        ];
-
-        // ⚡ 黃色落雷閃電
-        const lightningMap = [
-            [_,_,_,_,Y,Y,_,_], 
-            [_,_,_,Y,Y,Y,_,_], 
-            [_,_,Y,Y,Y,_,_,_], 
-            [_,Y,Y,Y,_,_,_,_], 
-            [Y,Y,Y,Y,Y,Y,Y,_], 
-            [Y,Y,Y,Y,Y,Y,_,_], 
-            [_,_,_,Y,Y,_,_,_], 
-            [_,_,Y,Y,_,_,_,_], 
-            [_,Y,Y,_,_,_,_,_], 
-            [Y,Y,_,_,_,_,_,_]
-        ];
-
-        // 🧱 大紅磚方塊
-        const blockMap = [
-            [Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl],
-            [Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],
-            [Bl,Rd,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,dR,Bl],
-            [Bl,Rd,Wh,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,dR,dR,Bl],
-            [Bl,Rd,Wh,Rd,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Rd,dR,dR,Bl],
-            [Bl,Rd,Wh,Rd,Bl,Dk,Dk,Dk,Dk,Dk,Dk,Bl,Rd,dR,dR,Bl],
-            [Bl,Rd,Wh,Rd,Bl,Dk,Rd,Rd,Rd,Rd,Dk,Bl,Rd,dR,dR,Bl],
-            [Bl,Rd,Wh,Rd,Bl,Dk,Rd,Rd,Rd,Rd,Dk,Bl,Rd,dR,dR,Bl],
-            [Bl,Rd,Wh,Rd,Bl,Dk,Bl,Bl,Bl,Bl,Dk,Bl,Rd,dR,dR,Bl],
-            [Bl,Rd,Wh,Rd,Bl,Dk,Dk,Dk,Dk,Dk,Dk,Bl,Rd,dR,dR,Bl],
-            [Bl,Rd,Wh,Rd,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Rd,dR,dR,Bl],
-            [Bl,Rd,Wh,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,dR,dR,Bl],
-            [Bl,Rd,Wh,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,Bl],
-            [Bl,Rd,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,Bl],
-            [Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl]
-        ];
-
-        // ☁️ 經典大白雲
-        const marioCloudMap = [
-            [_,_,_,_,_,_,W,W,W,W,W,W,_,_,_,_,_,_,_,_], 
-            [_,_,_,_,W,W,W,W,W,W,W,W,W,W,_,_,_,_,_,_], 
-            [_,_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_,_,_], 
-            [_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_], 
-            [W,W,W,W,W,W,Bl,W,W,W,W,Bl,W,W,W,W,W,W,W,_], 
-            [W,W,W,W,W,W,Bl,W,W,W,W,Bl,W,W,W,W,W,W,W,_], 
-            [W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_], 
-            [_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_], 
-            [_,_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_,_,_], 
-            [_,_,_,_,W,W,W,W,W,W,W,W,W,W,_,_,_,_,_,_]
-        ];
-
+        const realShroomMap = [[_,_,_,_,Bl,Bl,Bl,Bl,_,_,_,_],[_,_,Bl,Bl,Rd,Rd,Rd,Rd,Bl,Bl,_,_],[_,Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl,_],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Bl,Wh,Rd,Rd,Rd,Bl,Wh,Rd,Rd,Bl],[Bl,Rd,Bl,Bl,Rd,Rd,Rd,Bl,Bl,Rd,Rd,Bl],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Bl,Rd,Bl,Rd,Bl,Rd,Bl,Rd,Rd,Bl],[_,Bl,_,Bl,_,Bl,_,Bl,_,Bl,Bl,_]];
+        const lightningMap = [[_,_,_,_,Y,Y,_,_],[_,_,_,Y,Y,Y,_,_],[_,_,Y,Y,Y,_,_,_],[_,Y,Y,Y,_,_,_,_],[Y,Y,Y,Y,Y,Y,Y,_],[Y,Y,Y,Y,Y,Y,_,_],[_,_,_,Y,Y,_,_,_],[_,_,Y,Y,_,_,_],[_,Y,Y,_,_,_,_],[Y,Y,_,_,_,_,_,_]];
+        const blockMap = [[Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,dR,Bl],[Bl,Rd,Wh,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Dk,Dk,Dk,Dk,Dk,Dk,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Dk,Rd,Rd,Rd,Rd,Dk,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Dk,Rd,Rd,Rd,Rd,Dk,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Dk,Bl,Bl,Bl,Bl,Dk,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Dk,Dk,Dk,Dk,Dk,Dk,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,dR,dR,Bl],[Bl,Rd,Wh,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,Bl],[Bl,Rd,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,Bl],[Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl]];
+        const marioCloudMap = [[_,_,_,_,_,_,W,W,W,W,W,W,_,_,_,_,_,_,_,_],[_,_,_,_,W,W,W,W,W,W,W,W,W,W,_,_,_,_,_,_],[_,_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,,_,_],[_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_],[W,W,W,W,W,W,Bl,W,W,W,W,Bl,W,W,W,W,W,W,W,_],[W,W,W,W,W,W,Bl,W,W,W,W,Bl,W,W,W,W,W,W,W,_],[W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_],[_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_],[_,_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_,_,_],[_,_,_,_,W,W,W,W,W,W,W,W,W,W,_,_,_,_,_,_]];
         const pixelHeartRed = [[_,_,Bl,Bl,Bl,_,_,Bl,Bl,Bl,_,_],[_,Bl,Rd,Rd,Rd,Bl,Bl,Rd,Rd,Rd,Bl,_],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[_,Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl,_],[_,_,Bl,Rd,Rd,Rd,Rd,Rd,Rd,Bl,_,_],[_,_,_,Bl,Rd,Rd,Rd,Rd,Bl,_,_,_],[_,_,_,_,Bl,Rd,Wh,Bl,_,_,_,_],[_,_,_,_,_,Bl,Bl,_,_,_,_,_]];
         const pixelHeartWhite = [[_,_,Bl,Bl,Bl,_,_,Bl,Bl,Bl,_,_],[_,Bl,Wh,Wh,Wh,Bl,Bl,Wh,Wh,Wh,Bl,_],[Bl,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Bl],[Bl,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Bl],[_,Bl,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Bl,_],[_,_,Bl,Wh,Wh,Wh,Wh,Wh,Wh,Bl,_,_],[_,_,_,Bl,Wh,Wh,Wh,Wh,Bl,_,_,_],[_,_,_,_,Bl,Wh,Wh,Bl,_,_,_,_],[_,_,_,_,_,Bl,Bl,_,_,_,_,_]];
 
@@ -236,18 +146,13 @@
         // ====================================================
         const firebaseConfig = { apiKey: "AIzaSyASkvJHY0ptw1VjbbEeCFy35_CzgNrtf4I", authDomain: "phdesign-b0e40.firebaseapp.com", projectId: "phdesign-b0e40", storageBucket: "phdesign-b0e40.firebasestorage.app", messagingSenderId: "365690247", appId: "1:365690247:web:485f4ce82df0e57a8e2722", measurementId: "G-3SQFQK9D6H" };
         let db = null; let isFirebaseActive = false;
-        if (firebaseConfig.apiKey !== "YOUR_API_KEY") { firebase.initializeApp(firebaseConfig); db = firebase.firestore(); isFirebaseActive = true; }
+        if (firebaseConfig.apiKey !== "YOUR_API_KEY") { 
+            try { firebase.initializeApp(firebaseConfig); db = firebase.firestore(); isFirebaseActive = true; } catch(e) { console.error(e); }
+        }
 
         let isDailyChallenge = false; let dailySeed = 0; let todayStr = ""; 
         function getRand() { if (!isDailyChallenge) return Math.random(); let x = Math.sin(dailySeed++) * 10000; return x - Math.floor(x); }
-        
-        function getLocalDateString() { 
-            const d = new Date(); 
-            const year = d.getFullYear(); 
-            const month = String(d.getMonth() + 1).padStart(2, '0'); 
-            const date = String(d.getDate()).padStart(2, '0'); 
-            return `${year}-${month}-${date}`; 
-        }
+        function getLocalDateString() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
         function initDailySeedAndDate() { const d = new Date(); todayStr = getLocalDateString(); dailySeed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }
 
         const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
@@ -267,21 +172,16 @@
         let gameActive = false; let isCountingDown = false; let isFirstLoad = true; 
         let playerLives = 3; let invulnerableTimer = 0; const invulnerableDuration = 1500; 
 
-        // 💥 彈幕地獄怪量暴增模式配置
-        let baseSpeed = 3.2; 
-        let currentSpeed = 3.2; 
-        let baseSpawnRate = 1350;
-
-        let gameLevel = 1; let levelTimer = 0; let lastSpawnTime = 0;
-        let lastLightningTime = 0; let currentLightningCD = 2000; let baseLightningSpeed = 5.5; let currentLightningSpeed = 5.5; let spawnedLevels = []; 
+        let currentSpeed = 3.2; let gameLevel = 1; let levelTimer = 0; let lastSpawnTime = 0;
+        let lastLightningTime = 0; let currentLightningCD = 2000; let currentLightningSpeed = 5.5; let spawnedLevels = []; 
         let isSlowed = false; let slowTimer = 0; const slowDuration = 2000; let shakeTimer = 0; let shakeIntensity = 0;
         let playerAnimTimer = 0; let playerFrame = 0; let isDragging = false;
         let healHearts = []; let heartSpawnTimer = 0; let currentHeartCD = 30000; let heartBlinkState = 0; let isInvincibleFromHeart = false; let blockHitMap = []; 
 
         // ====================================================
-        // 第三區：通用像素噴塗與核心物理碰撞引擎
+        // 第三區：物理與安全像素渲染引擎
         // ====================================================
-        function drawPixelSprite(map, x, y, pixelSize) { for (let row = 0; row < map.length; row++) { for (let col = 0; col < map[row].length; col++) { if (map[row][col] !== null) { ctx.fillStyle = map[row][col]; ctx.fillRect(x + col * pixelSize, y + row * pixelSize, pixelSize, pixelSize); } } } }
+        function drawPixelSprite(map, x, y, pixelSize, targetCtx = ctx) { for (let row = 0; row < map.length; row++) { for (let col = 0; col < map[row].length; col++) { if (map[row][col] !== null) { targetCtx.fillStyle = map[row][col]; targetCtx.fillRect(x + col * pixelSize, y + row * pixelSize, pixelSize, pixelSize); } } } }
         function getCanvasCoords(offsetX, offsetY, rect) { return { x: (offsetX / rect.width) * V_WIDTH, y: (offsetY / rect.height) * V_HEIGHT }; }
         function handleInputMove(currentX, currentY) { if (!isDragging) return; let dx = currentX - lastInputX; let dy = currentY - lastInputY; if (isSlowed) { dx *= 0.4; dy *= 0.4; } playerX += dx; playerY += dy; lastInputX = currentX; lastInputY = currentY; }
 
@@ -314,33 +214,22 @@
         function gameTick(timestamp) { if (!lastTime) lastTime = timestamp; let deltaTime = timestamp - lastTime; lastTime = timestamp; if (gameActive) { updateGame(deltaTime); } renderGame(); animationFrameId = requestAnimationFrame(gameTick); }
 
         function updateGame(dt) {
-            let timeScale = dt / 16.666; 
-            rawScore += (dt * 0.06); score = Math.floor(rawScore); scoreBoard.innerText = `SCORE: ${score} (Level ${gameLevel})`;
-
+            let timeScale = dt / 16.666; rawScore += (dt * 0.06); score = Math.floor(rawScore); scoreBoard.innerText = `SCORE: ${score} (Level ${gameLevel})`;
             levelTimer += dt;
-            if (levelTimer >= 10000) { 
-                gameLevel++; 
-                levelTimer = 0; 
-                if (gameLevel >= 5 && gameLevel % 5 === 0) currentLightningSpeed += 0.8; 
-                checkAndActivateBlocks(); 
-                currentHeartCD = Math.max(12000, 30000 - (gameLevel - 1) * 1500); 
-            }
+            if (levelTimer >= 10000) { gameLevel++; levelTimer = 0; if (gameLevel >= 5 && gameLevel % 5 === 0) currentLightningSpeed += 0.8; checkAndActivateBlocks(); currentHeartCD = Math.max(12000, 30000 - (gameLevel - 1) * 1500); }
             if (invulnerableTimer > 0) { invulnerableTimer -= dt; if (invulnerableTimer <= 0) isInvincibleFromHeart = false; }
             if (isSlowed) { slowTimer -= dt; if (slowTimer <= 0) isSlowed = false; }
             if (shakeTimer > 0) shakeTimer -= dt;
-
             heartBlinkState += dt; heartSpawnTimer += dt;
             if (heartSpawnTimer >= currentHeartCD) { spawnHeartItem(); heartSpawnTimer = 0; }
 
             for (let i = healHearts.length - 1; i >= 0; i--) { let heart = healHearts[i]; heart.y += heart.vy * timeScale; if (heart.y > groundY) { healHearts.splice(i, 1); continue; } if (playerX < heart.x + heartItemW && playerX + playerW > heart.x && playerY < heart.y + heartItemH && playerY + playerH > heart.y) { healPlayer(); healHearts.splice(i, 1); continue; } }
             for (let block of solidBlocks) { block.x += block.vx * timeScale; if (block.x <= 0) { block.x = 0; block.vx = -block.vx; } else if (block.x >= V_WIDTH - blockW) { block.x = V_WIDTH - blockW; block.vx = -block.vx; } }
-
             if (isDragging) { playerAnimTimer += dt; if (playerAnimTimer >= 150) { playerFrame = playerFrame === 0 ? 1 : 0; playerAnimTimer = 0; } } else { playerFrame = 0; }
 
             handleSolidCollisions(); clampPlayer();
 
-            lastSpawnTime += dt;
-            let currentCD = Math.max(250, 1350 - (gameLevel - 1) * 150);
+            lastSpawnTime += dt; let currentCD = Math.max(250, 1350 - (gameLevel - 1) * 150);
             if (lastSpawnTime >= currentCD) {
                 let direction = Math.floor(getRand() * 4); let startX, startY;
                 switch(direction) { case 0: startX = getRand() * (V_WIDTH - shroomW); startY = -shroomH; break; case 1: startX = getRand() * (V_WIDTH - shroomW); startY = groundY; break; case 2: startX = -shroomW; startY = getRand() * (groundY - shroomH); break; case 3: default: startX = V_WIDTH; startY = getRand() * (groundY - shroomH); break; }
@@ -358,75 +247,39 @@
             for (let i = obstacles.length - 1; i >= 0; i--) { let obs = obstacles[i]; obs.x += obs.vx * timeScale; obs.y += obs.vy * timeScale; if (obs.x < -shroomW - 80 || obs.x > V_WIDTH + 80 || obs.y < -shroomH - 80 || obs.y > groundY + 80) { obstacles.splice(i, 1); continue; } if ( playerX < obs.x + shroomW && playerX + playerW > obs.x && playerY < obs.y + shroomH && playerY + playerH > obs.y ) { hurtPlayer(); obstacles.splice(i, 1); continue; } }
         }
 
-        // 🧱 移動方塊生成防線
         function checkAndActivateBlocks() { 
             if (gameLevel >= 3 && gameLevel % 3 === 0 && !spawnedLevels.includes(gameLevel)) { 
-                let seedX = Math.abs(Math.sin(gameLevel * 12.9898 + 78.233)) * 43758.5453; 
-                let targetX = 180 + Math.floor((seedX - Math.floor(seedX)) * 470); 
-                let seedY = Math.abs(Math.cos(gameLevel * 45.164 + 12.731)) * 23419.1431; 
-                let targetY = 80 + Math.floor((seedY - Math.floor(seedY)) * 280); 
-
-                if (solidBlocks.length > 0) {
-                    for (let block of solidBlocks) {
-                        if (Math.sqrt(Math.pow(targetX - block.x, 2) + Math.pow(targetY - block.y, 2)) < 85) {
-                            targetY = (targetY + 60) > 360 ? 90 : (targetY + 60);
-                        }
-                    }
-                }
-                solidBlocks.push({ x: targetX, y: targetY, vx: (0.8 + getRand() * 0.7) * (getRand() > 0.5 ? 1 : -1) }); 
-                spawnedLevels.push(gameLevel); 
+                let seedX = Math.abs(Math.sin(gameLevel * 12.9898 + 78.233)) * 43758.5453; let targetX = 180 + Math.floor((seedX - Math.floor(seedX)) * 470); 
+                let seedY = Math.abs(Math.cos(gameLevel * 45.164 + 12.731)) * 23419.1431; let targetY = 80 + Math.floor((seedY - Math.floor(seedY)) * 280); 
+                if (solidBlocks.length > 0) { for (let block of solidBlocks) { if (Math.sqrt(Math.pow(targetX - block.x, 2) + Math.pow(targetY - block.y, 2)) < 85) { targetY = (targetY + 60) > 360 ? 90 : (targetY + 60); } } }
+                solidBlocks.push({ x: targetX, y: targetY, vx: (0.8 + getRand() * 0.7) * (getRand() > 0.5 ? 1 : -1) }); spawnedLevels.push(gameLevel); 
             } 
         }
         
         function renderGame() {
             ctx.save(); if (shakeTimer > 0) ctx.translate((Math.random() - 0.5) * shakeIntensity, (Math.random() - 0.5) * shakeIntensity);
-            
-            // 🌌 復古深藍色夜空背景色
             ctx.fillStyle = "#1a3053"; ctx.fillRect(0, 0, V_WIDTH, V_HEIGHT); 
-            
-            // ☁️ 大白雲
-            drawPixelSprite(marioCloudMap, 100, 50, 3); 
-            drawPixelSprite(marioCloudMap, 500, 80, 2.5); 
-            
-            // 🧱 復古灰色城堡地磚
-            for (let x = 0; x < V_WIDTH; x += 32) { 
-                ctx.fillStyle = "#2c3d52"; ctx.fillRect(x, groundY, 32, 10); 
-                ctx.fillStyle = "#1e2936"; ctx.fillRect(x + 4, groundY + 10, 4, 4); ctx.fillRect(x + 16, groundY + 10, 4, 4); 
-                ctx.fillStyle = "#131b24"; ctx.fillRect(x, groundY + 14, 32, V_HEIGHT - (groundY + 14)); 
-                ctx.fillStyle = "#243242"; ctx.fillRect(x + 8, groundY + 25, 6, 6); ctx.fillRect(x + 20, groundY + 45, 6, 6); 
-            }
+            drawPixelSprite(marioCloudMap, 100, 50, 3); drawPixelSprite(marioCloudMap, 500, 80, 2.5); 
+            for (let x = 0; x < V_WIDTH; x += 32) { ctx.fillStyle = "#2c3d52"; ctx.fillRect(x, groundY, 32, 10); ctx.fillStyle = "#1e2936"; ctx.fillRect(x + 4, groundY + 10, 4, 4); ctx.fillRect(x + 16, groundY + 10, 4, 4); ctx.fillStyle = "#131b24"; ctx.fillRect(x, groundY + 14, 32, V_HEIGHT - (groundY + 14)); ctx.fillStyle = "#243242"; ctx.fillRect(x + 8, groundY + 25, 6, 6); ctx.fillRect(x + 20, groundY + 45, 6, 6); }
             for (let block of solidBlocks) drawPixelSprite(blockMap, block.x, block.y, 3);
             for (let w of warningLines) { ctx.save(); ctx.strokeStyle = "rgba(255, 255, 255, 0.4)"; ctx.lineWidth = 3; ctx.setLineDash([8, 4]); ctx.beginPath(); ctx.moveTo(w.sx + 8, w.sy); ctx.lineTo(w.sx + 8 + w.vx * 100, w.sy + w.vy * 100); ctx.stroke(); ctx.restore(); }
-            
-            // ⚡ 黃色閃電
             for (let lightning of lightnings) drawPixelSprite(lightningMap, lightning.x, lightning.y, 2.3);
             for (let heart of healHearts) { let map = (Math.floor(heartBlinkState / 150) % 2 === 0) ? pixelHeartRed : pixelHeartWhite; drawPixelSprite(map, heart.x, heart.y, 2.3); }
-            
-            // 🥷 忍者主角
-            if (invulnerableTimer <= 0 || Math.floor(invulnerableTimer / 100) % 2 === 0) { 
-                if (isSlowed) { ctx.save(); ctx.shadowBlur = 15; ctx.shadowColor = "#ffffff"; drawPixelSprite(vibeBoyFrames[playerFrame], playerX + (Math.random()-0.5)*3, playerY + (Math.random()-0.5)*3, 2.2); ctx.restore(); } 
-                else { 
-                    if (isInvincibleFromHeart) { ctx.save(); ctx.shadowBlur = 12; ctx.shadowColor = "#fffa00"; drawPixelSprite(vibeBoyFrames[playerFrame], playerX, playerY, 2.2); ctx.restore(); } 
-                    else { drawPixelSprite(vibeBoyFrames[playerFrame], playerX, playerY, 2.2); } 
-                } 
-            }
-            // 👾 紅色小幽靈
+            if (invulnerableTimer <= 0 || Math.floor(invulnerableTimer / 100) % 2 === 0) { if (isSlowed) { ctx.save(); ctx.shadowBlur = 15; ctx.shadowColor = "#ffffff"; drawPixelSprite(vibeBoyFrames[playerFrame], playerX + (Math.random()-0.5)*3, playerY + (Math.random()-0.5)*3, 2.2); ctx.restore(); } else { if (isInvincibleFromHeart) { ctx.save(); ctx.shadowBlur = 12; ctx.shadowColor = "#fffa00"; drawPixelSprite(vibeBoyFrames[playerFrame], playerX, playerY, 2.2); ctx.restore(); } else { drawPixelSprite(vibeBoyFrames[playerFrame], playerX, playerY, 2.2); } } }
             for (let obs of obstacles) drawPixelSprite(realShroomMap, obs.x, obs.y, 2.5); ctx.restore(); 
         }
 
         // ====================================================
-        // 第四區：Firebase 排行榜數據持久化模組
+        // 第四區：Firebase 排行榜數據
         // ====================================================
         async function fetchGlobalScores(highlightId = null) {
-            leaderboardRows.innerHTML = "FETCHING ARCADE RECORDS...";
-            const titleEl = document.getElementById('leaderboard-title');
+            leaderboardRows.innerHTML = "FETCHING ARCADE RECORDS..."; const titleEl = document.getElementById('leaderboard-title');
             if (titleEl) titleEl.innerText = isDailyChallenge ? "📅 TODAY'S CHALLENGE" : "🌍 GLOBAL TOP 100";
-
             if (isFirebaseActive) {
                 try {
                     let query = db.collection("leaderboard"); let records = [];
                     if (isDailyChallenge) {
-                        const d = new Date(); const year = d.getFullYear(); const month = String(d.getMonth() + 1).padStart(2, '0'); const date = String(d.getDate()).padStart(2, '0'); const currentTodayStr = `${year}-${month}-${date}`;
+                        const d = new Date(); const currentTodayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
                         query = query.where("mode", "==", "daily").where("date", "==", currentTodayStr).orderBy("score", "desc").limit(100);
                         const snapshot = await query.get(); snapshot.forEach(doc => records.push({ id: doc.id, ...doc.data() }));
                     } else {
@@ -437,25 +290,23 @@
                 } catch (e) { console.error(e); renderLeaderboardUI(getMockLeaderboard(), highlightId, true); }
             } else { renderLeaderboardUI(getMockLeaderboard(), highlightId, true); }
         }
-
         function getMockLeaderboard() { let local = localStorage.getItem('mario_evade_scores'); return local ? JSON.parse(local) : [ { name: "MASTER_DASH", score: 1890, level: 5 }, { name: "EVADE_PRO", score: 1745, level: 4 }, { name: "SHROOM_SKILL", score: 1601, level: 3 }, { name: "RETRO_REBEL", score: 1480, level: 2 }, { name: "PIXEL_PIPELINE", score: 1350, level: 1 } ]; }
         function renderLeaderboardUI(board, highlightIdOrIndex, isMock = false) { leaderboardRows.innerHTML = ''; board.forEach((record, index) => { const isHighlight = isFirebaseActive ? (record.id === highlightIdOrIndex) : (index === highlightIdOrIndex); const row = document.createElement('div'); row.className = `score-row ${isHighlight ? 'highlight' : ''}`; row.innerHTML = ` <span class="score-rank">${index + 1}.</span> <span class="score-name">${record.name}</span> <span class="score-val">${record.score} (Lv.${record.level})</span> `; leaderboardRows.appendChild(row); }); }
 
         // ====================================================
-        // 第五區：生命週期控制與戰報分享
+        // 第五區：生命週期控制與【⚡CORS 安全跨域防護圖片原生分享】
         // ====================================================
         async function endGame() { 
             gameActive = false; isDragging = false; cancelAnimationFrame(animationFrameId); 
-            menuTitle.innerText = "SUPER EVADE MASTER"; 
+            const subTitleEl = document.getElementById('sub-header-title'); if (subTitleEl) subTitleEl.innerText = isDailyChallenge ? "📅 DAILY CHALLENGE" : "🕹️ ARCADE MODE";
             finalScoreText.innerText = `FINAL SCORE: ${score} (Level ${gameLevel})`; finalScoreText.style.display = 'block'; 
             inputArea.style.display = 'none'; mainMenuPanel.style.display = 'none';
-
             let isHighScore = false; 
             if (isFirebaseActive) { 
-                try { 
+                try {
                     let query = db.collection("leaderboard"); let currentLowScore = 0;
                     if (isDailyChallenge) {
-                        const d = new Date(); const year = d.getFullYear(); const month = String(d.getMonth() + 1).padStart(2, '0'); const date = String(d.getDate()).padStart(2, '0'); const currentTodayStr = `${year}-${month}-${date}`;
+                        const d = new Date(); const currentTodayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
                         query = query.where("mode", "==", "daily").where("date", "==", currentTodayStr).orderBy("score", "desc").limit(100);
                         const snapshot = await query.get(); if (snapshot.size < 100 || score > snapshot.docs[snapshot.docs.length - 1].data().score) isHighScore = true;
                     } else {
@@ -465,48 +316,127 @@
                     }
                 } catch(e) { isHighScore = score > getMockLeaderboard()[4].score; } 
             } else { isHighScore = score > getMockLeaderboard()[4].score; } 
-            
-            if (isHighScore) { inputArea.style.display = 'flex'; nameInput.value = ''; setTimeout(() => nameInput.focus(), 100); } 
-            else { mainMenuPanel.style.display = 'flex'; await fetchGlobalScores(); } 
+            if (isHighScore) { inputArea.style.display = 'flex'; nameInput.value = ''; setTimeout(() => nameInput.focus(), 100); } else { mainMenuPanel.style.display = 'flex'; await fetchGlobalScores(); } 
             gameOverScreen.style.display = 'flex'; topBar.style.display = 'none'; 
         }
 
         submitBtn.addEventListener('click', async () => { 
             let name = nameInput.value.trim().toUpperCase() || "AAA"; if (name.length > 10) name = name.substring(0, 10); if (isDailyChallenge) name = name.substring(0, 7) + "(D)";
-            submitBtn.disabled = true; 
-            
-            const d = new Date(); const year = d.getFullYear(); const month = String(d.getMonth() + 1).padStart(2, '0'); const date = String(d.getDate()).padStart(2, '0'); const currentTodayStr = `${year}-${month}-${date}`;
-
+            submitBtn.disabled = true; const d = new Date(); const currentTodayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
             const recordData = { name: name, score: score, level: gameLevel, mode: isDailyChallenge ? "daily" : "normal", date: currentTodayStr, timestamp: firebase.firestore.FieldValue.serverTimestamp() };
-            if (isFirebaseActive) { 
-                try { const docRef = await db.collection("leaderboard").add(recordData); inputArea.style.display = 'none'; mainMenuPanel.style.display = 'flex'; await fetchGlobalScores(docRef.id); } catch(e) { console.error(e); } 
-            } else { 
-                let board = getMockLeaderboard(); board.push(recordData); board.sort((a, b) => b.score - a.score); board = board.slice(0, 5); localStorage.setItem('mario_evade_scores', JSON.stringify(board)); inputArea.style.display = 'none'; mainMenuPanel.style.display = 'flex'; renderLeaderboardUI(board, board.findIndex(r => r.score === score), true); 
-            } 
+            if (isFirebaseActive) { try { const docRef = await db.collection("leaderboard").add(recordData); inputArea.style.display = 'none'; mainMenuPanel.style.display = 'flex'; await fetchGlobalScores(docRef.id); } catch(e) { console.error(e); } } 
+            else { let board = getMockLeaderboard(); board.push(recordData); board.sort((a, b) => b.score - a.score); board = board.slice(0, 5); localStorage.setItem('mario_evade_scores', JSON.stringify(board)); inputArea.style.display = 'none'; mainMenuPanel.style.display = 'flex'; renderLeaderboardUI(board, board.findIndex(r => r.score === score), true); } 
             submitBtn.disabled = false; 
         });
 
+        // 🖼️ 100% 安全的純畫布渲染：完全避開 DOM 跨域污染，杜絕 toBlob 出現 null 崩潰
+        function generateShareImage() {
+            const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
+            sCtx.fillStyle = "#1a3053"; sCtx.fillRect(0, 0, 600, 315);
+            sCtx.strokeStyle = "#ffffff"; sCtx.lineWidth = 4; sCtx.strokeRect(10, 10, 580, 295);
+            drawPixelSprite(marioCloudMap, 40, 30, 2, sCtx); drawPixelSprite(marioCloudMap, 420, 50, 1.5, sCtx);
+            sCtx.fillStyle = "#e52521"; sCtx.font = "bold 26px sans-serif"; sCtx.textAlign = "center";
+            sCtx.fillText("SUPER EVADE MASTER", 300, 75);
+            sCtx.fillStyle = "#ffffff"; sCtx.font = "bold 16px sans-serif";
+            sCtx.fillText("💥 MISSION SCORE REPORT 💥", 300, 115);
+            sCtx.fillStyle = "#ffd700"; sCtx.font = "bold 42px sans-serif";
+            sCtx.fillText(`${score} PTS`, 300, 175);
+            sCtx.fillStyle = "#ffffff"; sCtx.font = "bold 18px sans-serif";
+            sCtx.fillText(`SURVIVED LEVEL: ${gameLevel}`, 300, 225);
+            sCtx.fillStyle = "rgba(255,255,255,0.4)"; sCtx.font = "12px sans-serif";
+            sCtx.fillText("ARCADE v2.01.2 • CHROME SHARE MODE", 300, 278);
+            drawPixelSprite(vibeBoyFrame0, 110, 135, 2.6, sCtx); drawPixelSprite(realShroomMap, 440, 145, 2.6, sCtx);
+        }
+
+        // 📢 終極完全體原生分享核心監聽器（封殺 Tainted Canvas 與 Windows 審查拒收 Bug）
+        shareBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const modeText = isDailyChallenge ? "每日挑戰榜" : "全球街機榜";
+            
+            // 構建純文字備援戰報格式
+            const textReport = `🥷 SUPER EVADE MASTER 戰報\n🎯 模式：${modeText}\n🏆 分數：${score} 分\n⚡ 等級：Level ${gameLevel}\n🔗 挑戰連結：${window.location.href}\n(貼心提示：已全自動複製到剪貼簿，可直接貼上分享！ )`;
+
+            try {
+                generateShareImage(); // 背景無污染繪圖
+                const sCanvas = document.getElementById('shareCanvas');
+                
+                // 執行安全 Blob 轉換
+                sCanvas.toBlob(async (blob) => {
+                    // 防線 1：如果因為瀏覽器權限或極端 CORS 導致 blob 失敗，立即啟動文字剪貼簿機制，絕不讓按鈕卡死
+                    if (!blob) {
+                        executeTextFallback(textReport);
+                        return;
+                    }
+                    
+                    // 防線 2：補全 Windows 系統原生審查必須的 lastModified 時間戳
+                    const file = new File([blob], "score_report.png", { 
+                        type: "image/png",
+                        lastModified: Date.now() 
+                    });
+
+                    const shareData = {
+                        title: "🥷 SUPER EVADE MASTER 戰報",
+                        text: `我在《Super Evade Master》【${modeText}】成功突破地獄，斬獲了 ${score} 分 (達到了 Level ${gameLevel})！快來打破我的街機紀錄！🔥`,
+                        url: window.location.href,
+                        files: [file]
+                    };
+
+                    // 防線 3：檢查當前環境是否完美支援真實檔案分享
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share(shareData); // 🎯 成功召喚 Windows / 手機的原生大面板
+                            return;
+                        } catch (err) {
+                            if (err.name === 'AbortError') return; // 用戶自行關閉面板不作錯誤處理
+                            console.warn("Native share error, switching to fallback:", err);
+                        }
+                    }
+                    
+                    // 如果不支援檔案分享（例如某些舊版 Chrome），自動降級進入文字防線
+                    executeTextFallback(textReport);
+                }, "image/png");
+
+            } catch (canvasErr) {
+                console.error("Canvas share process error:", canvasErr);
+                executeTextFallback(textReport);
+            }
+        });
+
+        // 📋 終極自動降級文字複製機制
+        async function executeTextFallback(textReport) {
+            try {
+                await navigator.clipboard.writeText(textReport);
+                showToast("COPIED RECORD TO CLIPBOARD! 📋");
+            } catch (clipErr) {
+                const textArea = document.createElement("textarea");
+                textArea.value = textReport;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast("COPIED RECORD TO CLIPBOARD! 📋");
+            }
+        }
+
+        function showToast(text) { toastMsg.innerText = text; toastMsg.style.display = 'block'; setTimeout(() => { toastMsg.style.display = 'none'; }, 2200); }
+
         // ====================================================
-        // 第六區：控制中心與任意切換事件
+        // 第六區：控制中心
         // ====================================================
         const toggleBoardBtn = document.getElementById('toggle-board-btn');
         if (toggleBoardBtn) { toggleBoardBtn.addEventListener('click', async (e) => { e.stopPropagation(); isDailyChallenge = !isDailyChallenge; await fetchGlobalScores(); }); }
-
         function startCountdown() { isCountingDown = true; gameActive = false; isDragging = false; countdownScreen.style.display = 'flex'; topBar.style.display = 'flex'; let count = 3; countdownText.innerText = "READY?"; let timer = setInterval(() => { if (count > 0) { countdownText.innerText = count; count--; } else { clearInterval(timer); countdownScreen.style.display = 'none'; isCountingDown = false; gameActive = true; } }, 800); }
         
         function initGame() { 
             if (isFirstLoad) { fetchGlobalScores(); isFirstLoad = false; renderGame(); mainMenuPanel.style.display = 'flex'; return; } 
             score = 0; rawScore = 0; gameLevel = 1; levelTimer = 0; lastSpawnTime = 0; lastLightningTime = 0; playerLives = 3; invulnerableTimer = 0; isSlowed = false; shakeTimer = 0; playerAnimTimer = 0; playerFrame = 0; obstacles = []; lightnings = []; solidBlocks = []; warningLines = []; spawnedLevels = []; isDragging = false; healHearts = []; heartSpawnTimer = 0; currentHeartCD = 30000; heartBlinkState = 0; isInvincibleFromHeart = false; blockHitMap = []; 
-            let d = new Date(); lastTime = 0;
-            initDailySeedAndDate();
-            checkAndActivateBlocks(); scoreBoard.innerText = "SCORE: 0 (Level 1)"; updateLivesUI(); gameOverScreen.style.display = 'none'; playerX = 100; playerY = groundY - playerH; cancelAnimationFrame(animationFrameId); requestAnimationFrame(gameTick); startCountdown(); 
+            lastTime = 0; initDailySeedAndDate(); checkAndActivateBlocks(); scoreBoard.innerText = "SCORE: 0 (Level 1)"; updateLivesUI(); gameOverScreen.style.display = 'none'; playerX = 100; playerY = groundY - playerH; cancelAnimationFrame(animationFrameId); requestAnimationFrame(gameTick); startCountdown(); 
         }
         
         restartBtn.addEventListener('click', () => { isDailyChallenge = false; if (gameOverScreen.style.display !== 'none') { isFirstLoad = false; initGame(); } });
         dailyBtn.addEventListener('click', () => { isDailyChallenge = true; if (gameOverScreen.style.display !== 'none') { isFirstLoad = false; initGame(); } });
 
-        initDailySeedAndDate(); 
-        initGame();
+        initDailySeedAndDate(); initGame();
     </script>
 </body>
 </html>
