@@ -3,67 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Super Evade Master - Retro Style v2.00.7</title>
+    <title>Super Evade Master - Edition v2.00.9</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         /* 🎨 完美馬力歐復古深藍與極簡像素排版 */
-        html, body { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; position: fixed; background-color: #0f1c33; font-family: 'Courier New', Courier, monospace; color: white; display: flex; justify-content: center; align-items: center; touch-action: none; -webkit-user-select: none; user-select: none; }
+        html, body { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; position: fixed; background-color: #0f1c33; font-family: 'Courier New', Courier, monospace; color: white; display: flex; justify-content: center; align-items: center; touch-action: none; -webkit-user-select: none; user-select: none; box-sizing: border-box; }
         
-        #game-container { position: relative; width: 98vw; max-width: 800px; aspect-ratio: 800 / 550; background-color: #1a3053; border: 4px solid #111; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; box-sizing: border-box; }
-        @media (max-aspect-ratio: 800/550) { #game-container { width: 98vw; height: auto; } }
-        @media (min-aspect-ratio: 800/550) { #game-container { height: 85vh; width: auto; } }
+        /* 📱 響應式核心：確保在手機或 iPad 等直屏畫面上，永遠等比例完美縮放，絕不裁切左右兩邊 */
+        #game-container { position: relative; width: 100vw; max-width: 800px; aspect-ratio: 800 / 550; background-color: #1a3053; border: 4px solid #111; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; box-sizing: border-box; }
+        
+        @media (max-aspect-ratio: 800/550) { #game-container { width: 96vw; height: auto; } }
+        @media (min-aspect-ratio: 800/550) { #game-container { height: 92vh; width: auto; } }
+        
         canvas { display: block; width: 100%; height: 100%; }
         
         .version-tag { position: absolute; bottom: 8px; right: 12px; font-size: 11px; color: rgba(255, 255, 255, 0.2); font-weight: bold; z-index: 100; pointer-events: none; }
-        #top-bar { position: absolute; top: 15px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; display: none; }
-        #score-board { font-size: 18px; font-weight: bold; text-shadow: 2px 2px 0 #000; color: #ffffff; letter-spacing: 1px; }
-        #lives-board { font-size: 18px; font-weight: bold; text-shadow: 2px 2px 0 #000; color: #ffd700; }
+        
+        /* 📱 優化手機端分數頂欄排版：安全安全邊距 */
+        #top-bar { position: absolute; top: 12px; left: 15px; right: 12px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; display: none; box-sizing: border-box; width: calc(100% - 27px); }
+        #score-board { font-size: 16px; font-weight: bold; text-shadow: 2px 2px 0 #000; color: #ffffff; letter-spacing: 1px; }
+        #lives-board { font-size: 16px; font-weight: bold; text-shadow: 2px 2px 0 #000; color: #ffd700; }
         @media (min-width: 600px) { #score-board, #lives-board { font-size: 22px; } }
         
         #countdown-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(26, 48, 83, 0.85); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 150; }
         #countdown-text { font-size: 64px; font-weight: bold; color: #e52521; text-shadow: 4px 4px 0 #000; animation: pulse 0.5s infinite alternate; margin-bottom: 10px; }
-        #how-to-play-tip { font-size: 13px; font-weight: bold; color: #fff; background: rgba(0,0,0,0.6); padding: 8px 16px; border: 2px solid #fff; text-shadow: 1px 1px 0 #000; text-align: center; }
+        #how-to-play-tip { font-size: 11px; font-weight: bold; color: #fff; background: rgba(0,0,0,0.6); padding: 6px 12px; border: 2px solid #fff; text-shadow: 1px 1px 0 #000; text-align: center; max-width: 85%; }
         
-        #game-over-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(26, 48, 83, 0.92); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; padding: 10px; box-sizing: border-box; }
+        #game-over-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(26, 48, 83, 0.94); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; padding: 10px; box-sizing: border-box; overflow-y: auto; }
         
-        /* 🧱 紅色黑邊重立體字 */
-        #game-over-screen h1 { font-size: 38px; color: #e52521; margin: 0 0 4px 0; text-shadow: 3px 0 0 #000, -3px 0 0 #000, 0 3px 0 #000, 0 -3px 0 #000, 3px 3px 0 #000, -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 6px 6px 0 #000; font-weight: 900; letter-spacing: 2px; text-align: center; }
-        @media (max-width: 450px) { #game-over-screen h1 { font-size: 26px; } }
-        @media (min-width: 600px) { #game-over-screen h1 { font-size: 52px; } }
+        /* 紅色黑邊重立體字 */
+        #game-over-screen h1 { font-size: 26px; color: #e52521; margin: 0 0 2px 0; text-shadow: 2px 0 0 #000, -2px 0 0 #000, 0 2px 0 #000, 0 -2px 0 #000, 2px 2px 0 #000, -2px -2px 0 #000; font-weight: 900; letter-spacing: 1px; text-align: center; }
+        @media (min-width: 450px) { #game-over-screen h1 { font-size: 34px; text-shadow: 3px 0 0 #000, -3px 0 0 #000, 0 3px 0 #000, 0 -3px 0 #000, 3px 3px 0 #000; } }
+        @media (min-width: 600px) { #game-over-screen h1 { font-size: 48px; } }
         
-        #sub-header-title { font-size: 16px; color: #ffffff; font-weight: bold; margin: 5px 0 15px 0; text-shadow: 2px 2px 0 #000; letter-spacing: 1px; }
-        #final-score { font-size: 16px; color: #ffd700; margin: 0 0 12px 0; text-shadow: 2px 2px 0 #000; display: none; font-weight: bold; }
+        #sub-header-title { font-size: 14px; color: #ffffff; font-weight: bold; margin: 4px 0 10px 0; text-shadow: 2px 2px 0 #000; letter-spacing: 1px; }
+        #final-score { font-size: 15px; color: #ffd700; margin: 0 0 10px 0; text-shadow: 2px 2px 0 #000; display: none; font-weight: bold; }
         
-        #input-area { display: none; flex-direction: column; align-items: center; margin-bottom: 6px; width: 85%; max-width: 320px; }
+        #input-area { display: none; flex-direction: column; align-items: center; margin-bottom: 6px; width: 90%; max-width: 300px; }
         #input-area label { font-size: 11px; color: #ffffff; margin-bottom: 4px; text-align: center; font-weight: bold; text-shadow: 1px 1px 0 #000; }
         #player-name-input { width: 100%; padding: 6px; font-size: 14px; border: 3px solid #fff; background: #000; color: #fff; text-align: center; font-family: inherit; outline: none; box-sizing: border-box; }
         #submit-btn { margin-top: 6px; padding: 6px 16px; font-size: 13px; background-color: #e52521; color: #fff; border: 2px solid #fff; font-weight: bold; cursor: pointer; text-shadow: 1px 1px 0 #000; }
         
         #main-menu-panel { display: none; flex-direction: column; align-items: center; width: 100%; }
         
-        /* 🪐 排行榜面板：全透明、純白像素乾淨字體 */
-        #leaderboard { width: 90%; max-width: 420px; background: transparent; padding: 0px 12px; margin-bottom: 15px; box-sizing: border-box; height: 42%; max-height: 190px; overflow-y: auto; }
-        #leaderboard::-webkit-scrollbar { width: 6px; } #leaderboard::-webkit-scrollbar-track { background: transparent; } #leaderboard::-webkit-scrollbar-thumb { background: #e52521; }
+        /* 📱 排行榜面板自適應 */
+        #leaderboard { width: 95%; max-width: 420px; background: transparent; padding: 0px 6px; margin-bottom: 10px; box-sizing: border-box; height: 38vh; max-height: 170px; overflow-y: auto; }
+        #leaderboard::-webkit-scrollbar { width: 5px; } #leaderboard::-webkit-scrollbar-track { background: transparent; } #leaderboard::-webkit-scrollbar-thumb { background: #e52521; }
         
-        .score-row { display: flex; justify-content: space-between; font-size: 14px; margin: 6px 0; font-weight: bold; color: #ffffff; text-shadow: 2px 2px 0 #000; font-family: monospace; letter-spacing: 0.5px; }
+        .score-row { display: flex; justify-content: space-between; font-size: 13px; margin: 5px 0; font-weight: bold; color: #ffffff; text-shadow: 2px 2px 0 #000; font-family: monospace; }
         .score-row.highlight { color: #fffa00; }
-        .score-rank { width: 35px; color: #ffffff; }
-        .score-name { flex-grow: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
+        .score-rank { width: 30px; color: #ffffff; }
+        .score-name { flex-grow: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px; }
         .score-val { text-align: right; color: #ffffff; }
         
-        .action-area { display: flex; flex-direction: column; gap: 8px; width: 90%; max-width: 360px; align-items: center; }
-        .btn-row { display: flex; flex-direction: column; gap: 6px; width: 100%; max-width: 260px; }
+        .action-area { display: flex; flex-direction: column; gap: 6px; width: 95%; max-width: 360px; align-items: center; }
+        .btn-row { display: flex; flex-direction: column; gap: 5px; width: 100%; max-width: 240px; }
         
-        /* 🕹️ 直角紅色像素立體按鈕 */
-        #restart-btn, #daily-btn, #share-btn { width: 100%; padding: 8px 5px; font-size: 14px; cursor: pointer; font-weight: bold; font-family: inherit; text-align: center; white-space: nowrap; box-sizing: border-box; text-shadow: 1px 1px 0 #000; position: relative; border-radius: 0px; }
-        #restart-btn { background-color: #e52521; color: #fff; border: 2px solid #ffffff; border-bottom: 5px solid #991210; }
-        #daily-btn { background-color: #e52521; color: #fff; border: 2px solid #ffffff; border-bottom: 5px solid #991210; }
-        #share-btn { background-color: #e52521; color: #fff; border: 2px solid #ffffff; border-bottom: 5px solid #991210; } 
-        #restart-btn:active, #daily-btn:active, #share-btn:active { border-bottom-width: 2px; transform: translateY(3px); }
+        /* 直角紅色像素立體按鈕 */
+        #restart-btn, #daily-btn, #share-btn { width: 100%; padding: 7px 4px; font-size: 13px; cursor: pointer; font-weight: bold; font-family: inherit; text-align: center; white-space: nowrap; box-sizing: border-box; text-shadow: 1px 1px 0 #000; position: relative; border-radius: 0px; }
+        #restart-btn { background-color: #e52521; color: #fff; border: 2px solid #ffffff; border-bottom: 4px solid #991210; }
+        #daily-btn { background-color: #e52521; color: #fff; border: 2px solid #ffffff; border-bottom: 4px solid #991210; }
+        #share-btn { background-color: #e52521; color: #fff; border: 2px solid #ffffff; border-bottom: 4px solid #991210; } 
+        #restart-btn:active, #daily-btn:active, #share-btn:active { border-bottom-width: 1px; transform: translateY(2px); }
         
-        .coffee-hint { font-size: 11px; color: #a2b4cd; text-align: center; margin-top: 4px; text-shadow: 1px 1px 0 #000; }
-        .bmc-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 4px 10px; font-size: 11px; font-weight: bold; color: #000; background-color: #ffd700; border: 2px solid #fff; border-radius: 4px; cursor: pointer; text-decoration: none; font-family: inherit; box-sizing: border-box; margin-top: 2px; }
+        .coffee-hint { font-size: 10px; color: #a2b4cd; text-align: center; margin-top: 2px; text-shadow: 1px 1px 0 #000; }
+        .bmc-btn { display: flex; align-items: center; justify-content: center; gap: 5px; padding: 4px 8px; font-size: 10px; font-weight: bold; color: #000; background-color: #ffd700; border: 2px solid #fff; border-radius: 4px; cursor: pointer; text-decoration: none; font-family: inherit; box-sizing: border-box; }
         #toast-msg { position: absolute; bottom: 20px; background: #e52521; color: white; padding: 6px 15px; font-weight: bold; font-size: 13px; display: none; z-index: 300; box-shadow: 0 0 10px #000; }
     </style>
 </head>
@@ -80,7 +85,7 @@
         <canvas id="gameCanvas"></canvas>
         <canvas id="shareCanvas" width="600" height="315" style="display:none;"></canvas>
         
-        <div class="version-tag">v2.00.7</div>
+        <div class="version-tag">v2.00.9</div>
         
         <div id="game-over-screen">
             <h1 id="menu-title">SUPER EVADE MASTER</h1>
@@ -125,7 +130,7 @@
 
         const K = Bl;
 
-        // 🥷 核心武士/忍者 (帶亮紅面罩與揮舞太刀)
+        // 🥷 核心武士/忍者
         const vibeBoyFrame0 = [
             [_,_,_,Bl,Bl,Bl,Bl,Bl,_,_,_,_],
             [_,_,Bl,Dk,Dk,Dk,Dk,Dk,Bl,_,_,_],
@@ -141,6 +146,8 @@
             [_,_,Bl,Dk,Bl,_,Bl,Dk,Bl,_,_,_],
             [_,_,Bl,Rd,Bl,_,Bl,Rd,Bl,_,_,_]
         ];
+        
+        // ⚡⚡⚡ 【終極拼寫修復點】：把拼錯的 _Bl 修正為正確的 _, Bl 分開宣告，徹底解凍卡死！
         const vibeBoyFrame1 = [
             [_,_,_,Bl,Bl,Bl,Bl,Bl,_,_,_,_],
             [_,_,Bl,Dk,Dk,Dk,Dk,Dk,Bl,_,_,_],
@@ -303,7 +310,7 @@
         function spawnHeartItem(customX = null) { let startX = customX !== null ? customX : (100 + getRand() * (V_WIDTH - 200)); healHearts.push({ x: startX, y: customX !== null ? playerY - 30 : -heartItemH, vy: 1.6 }); }
         function updateLivesUI() { let heartStr = ""; for(let i=0; i<3; i++) heartStr += (i < playerLives) ? "❤️" : "🖤"; livesBoard.innerText = heartStr; }
 
-        let animationFrameId;
+        let lastTime = 0; let animationFrameId;
         function gameTick(timestamp) { if (!lastTime) lastTime = timestamp; let deltaTime = timestamp - lastTime; lastTime = timestamp; if (gameActive) { updateGame(deltaTime); } renderGame(); animationFrameId = requestAnimationFrame(gameTick); }
 
         function updateGame(dt) {
@@ -351,7 +358,7 @@
             for (let i = obstacles.length - 1; i >= 0; i--) { let obs = obstacles[i]; obs.x += obs.vx * timeScale; obs.y += obs.vy * timeScale; if (obs.x < -shroomW - 80 || obs.x > V_WIDTH + 80 || obs.y < -shroomH - 80 || obs.y > groundY + 80) { obstacles.splice(i, 1); continue; } if ( playerX < obs.x + shroomW && playerX + playerW > obs.x && playerY < obs.y + shroomH && playerY + playerH > obs.y ) { hurtPlayer(); obstacles.splice(i, 1); continue; } }
         }
 
-        // ⚡⚡⚡ 【核心 Bug 終極修正點】：重寫方塊生成邏輯，設置最大嘗試防線，徹底免除升級卡死與人間蒸發！
+        // 🧱 移動方塊生成防線
         function checkAndActivateBlocks() { 
             if (gameLevel >= 3 && gameLevel % 3 === 0 && !spawnedLevels.includes(gameLevel)) { 
                 let seedX = Math.abs(Math.sin(gameLevel * 12.9898 + 78.233)) * 43758.5453; 
@@ -359,7 +366,6 @@
                 let seedY = Math.abs(Math.cos(gameLevel * 45.164 + 12.731)) * 23419.1431; 
                 let targetY = 80 + Math.floor((seedY - Math.floor(seedY)) * 280); 
 
-                // 如果當前有舊方塊，用安全計數器校正，嚴禁 while/for 無限累加
                 if (solidBlocks.length > 0) {
                     for (let block of solidBlocks) {
                         if (Math.sqrt(Math.pow(targetX - block.x, 2) + Math.pow(targetY - block.y, 2)) < 85) {
@@ -367,7 +373,6 @@
                         }
                     }
                 }
-                
                 solidBlocks.push({ x: targetX, y: targetY, vx: (0.8 + getRand() * 0.7) * (getRand() > 0.5 ? 1 : -1) }); 
                 spawnedLevels.push(gameLevel); 
             } 
