@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Super Evade Master - Ultimate Complete v2.01.2</title>
+    <title>Super Evade Master - Easy Edition v2.01.3</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
@@ -20,7 +20,7 @@
         
         .version-tag { position: absolute; bottom: 8px; right: 12px; font-size: 11px; color: rgba(255, 255, 255, 0.2); font-weight: bold; z-index: 100; pointer-events: none; }
         
-        /* 📱 優化手機/電腦端頂欄邊距 */
+        /* 📱 優化端分數頂欄排版 */
         #top-bar { position: absolute; top: 12px; left: 15px; right: 12px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; display: none; box-sizing: border-box; width: calc(100% - 27px); }
         #score-board { font-size: 16px; font-weight: bold; text-shadow: 2px 2px 0 #000; color: #ffffff; letter-spacing: 1px; }
         #lives-board { font-size: 16px; font-weight: bold; text-shadow: 2px 2px 0 #000; color: #ffd700; }
@@ -59,7 +59,6 @@
         .action-area { display: flex; flex-direction: column; gap: 6px; width: 95%; max-width: 360px; align-items: center; }
         .btn-row { display: flex; flex-direction: column; gap: 5px; width: 100%; max-width: 240px; }
         
-        /* 直角紅色像素立體按鈕 */
         #restart-btn, #daily-btn, #share-btn { width: 100%; padding: 7px 4px; font-size: 13px; cursor: pointer; font-weight: bold; font-family: inherit; text-align: center; white-space: nowrap; box-sizing: border-box; text-shadow: 1px 1px 0 #000; position: relative; border-radius: 0px; }
         #restart-btn { background-color: #e52521; color: #fff; border: 2px solid #ffffff; border-bottom: 4px solid #991210; }
         #daily-btn { background-color: #e52521; color: #fff; border: 2px solid #ffffff; border-bottom: 4px solid #991210; }
@@ -85,7 +84,7 @@
         <canvas id="gameCanvas"></canvas>
         <canvas id="shareCanvas" width="600" height="315" style="display:none;"></canvas>
         
-        <div class="version-tag">v2.01.2</div>
+        <div class="version-tag">v2.01.3</div>
         
         <div id="game-over-screen">
             <h1 id="menu-title">SUPER EVADE MASTER</h1>
@@ -137,7 +136,7 @@
         const realShroomMap = [[_,_,_,_,Bl,Bl,Bl,Bl,_,_,_,_],[_,_,Bl,Bl,Rd,Rd,Rd,Rd,Bl,Bl,_,_],[_,Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl,_],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Bl,Wh,Rd,Rd,Rd,Bl,Wh,Rd,Rd,Bl],[Bl,Rd,Bl,Bl,Rd,Rd,Rd,Bl,Bl,Rd,Rd,Bl],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Bl,Rd,Bl,Rd,Bl,Rd,Bl,Rd,Rd,Bl],[_,Bl,_,Bl,_,Bl,_,Bl,_,Bl,Bl,_]];
         const lightningMap = [[_,_,_,_,Y,Y,_,_],[_,_,_,Y,Y,Y,_,_],[_,_,Y,Y,Y,_,_,_],[_,Y,Y,Y,_,_,_,_],[Y,Y,Y,Y,Y,Y,Y,_],[Y,Y,Y,Y,Y,Y,_,_],[_,_,_,Y,Y,_,_,_],[_,_,Y,Y,_,_,_],[_,Y,Y,_,_,_,_],[Y,Y,_,_,_,_,_,_]];
         const blockMap = [[Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,dR,Bl],[Bl,Rd,Wh,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Dk,Dk,Dk,Dk,Dk,Dk,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Dk,Rd,Rd,Rd,Rd,Dk,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Dk,Rd,Rd,Rd,Rd,Dk,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Dk,Bl,Bl,Bl,Bl,Dk,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Dk,Dk,Dk,Dk,Dk,Dk,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Rd,dR,dR,Bl],[Bl,Rd,Wh,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,dR,dR,Bl],[Bl,Rd,Wh,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,Bl],[Bl,Rd,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,dR,Bl],[Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl,Bl]];
-        const marioCloudMap = [[_,_,_,_,_,_,W,W,W,W,W,W,_,_,_,_,_,_,_,_],[_,_,_,_,W,W,W,W,W,W,W,W,W,W,_,_,_,_,_,_],[_,_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,,_,_],[_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_],[W,W,W,W,W,W,Bl,W,W,W,W,Bl,W,W,W,W,W,W,W,_],[W,W,W,W,W,W,Bl,W,W,W,W,Bl,W,W,W,W,W,W,W,_],[W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_],[_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_],[_,_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_,_,_],[_,_,_,_,W,W,W,W,W,W,W,W,W,W,_,_,_,_,_,_]];
+        const marioCloudMap = [[_,_,_,_,_,_,W,W,W,W,W,W,_,_,_,_,_,_,_,_],[_,_,_,_,W,W,W,W,W,W,W,W,W,W,_,_,_,_,_,_],[_,_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_,_,_],[_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_],[W,W,W,W,W,W,Bl,W,W,W,W,Bl,W,W,W,W,W,W,W,_],[W,W,W,W,W,W,Bl,W,W,W,W,Bl,W,W,W,W,W,W,W,_],[W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_],[_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_],[_,_,W,W,W,W,W,W,W,W,W,W,W,W,W,W,_,_,_,_],[_,_,_,_,W,W,W,W,W,W,W,W,W,W,_,_,_,_,_,_]];
         const pixelHeartRed = [[_,_,Bl,Bl,Bl,_,_,Bl,Bl,Bl,_,_],[_,Bl,Rd,Rd,Rd,Bl,Bl,Rd,Rd,Rd,Bl,_],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl],[_,Bl,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Rd,Bl,_],[_,_,Bl,Rd,Rd,Rd,Rd,Rd,Rd,Bl,_,_],[_,_,_,Bl,Rd,Rd,Rd,Rd,Bl,_,_,_],[_,_,_,_,Bl,Rd,Wh,Bl,_,_,_,_],[_,_,_,_,_,Bl,Bl,_,_,_,_,_]];
         const pixelHeartWhite = [[_,_,Bl,Bl,Bl,_,_,Bl,Bl,Bl,_,_],[_,Bl,Wh,Wh,Wh,Bl,Bl,Wh,Wh,Wh,Bl,_],[Bl,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Bl],[Bl,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Bl],[_,Bl,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Wh,Bl,_],[_,_,Bl,Wh,Wh,Wh,Wh,Wh,Wh,Bl,_,_],[_,_,_,Bl,Wh,Wh,Wh,Wh,Bl,_,_,_],[_,_,_,_,Bl,Wh,Wh,Bl,_,_,_,_],[_,_,_,_,_,Bl,Bl,_,_,_,_,_]];
 
@@ -172,11 +171,17 @@
         let gameActive = false; let isCountingDown = false; let isFirstLoad = true; 
         let playerLives = 3; let invulnerableTimer = 0; const invulnerableDuration = 1500; 
 
-        let currentSpeed = 3.2; let gameLevel = 1; let levelTimer = 0; let lastSpawnTime = 0;
-        let lastLightningTime = 0; let currentLightningCD = 2000; let currentLightningSpeed = 5.5; let spawnedLevels = []; 
+        // 📉 【難度大調降核心】：降低基礎幽靈速度，放慢腳步
+        let baseSpeed = 2.0; 
+        let currentSpeed = 2.0; 
+
+        let gameLevel = 1; let levelTimer = 0; let lastSpawnTime = 0;
+        let lastLightningTime = 0; let currentLightningCD = 3000; let currentLightningSpeed = 4.2; let spawnedLevels = []; 
         let isSlowed = false; let slowTimer = 0; const slowDuration = 2000; let shakeTimer = 0; let shakeIntensity = 0;
         let playerAnimTimer = 0; let playerFrame = 0; let isDragging = false;
-        let healHearts = []; let heartSpawnTimer = 0; let currentHeartCD = 30000; let heartBlinkState = 0; let isInvincibleFromHeart = false; let blockHitMap = []; 
+        
+        // 📉 【愛心掉落變多】：縮短冷卻時間到 20000ms（20秒出一次），更容易補血
+        let healHearts = []; let heartSpawnTimer = 0; let currentHeartCD = 20000; let heartBlinkState = 0; let isInvincibleFromHeart = false; let blockHitMap = []; 
 
         // ====================================================
         // 第三區：物理與安全像素渲染引擎
@@ -197,7 +202,7 @@
             for (let i = 0; i < solidBlocks.length; i++) {
                 let block = solidBlocks[i];
                 if ( playerX < block.x + blockW && playerX + playerW > block.x && playerY < block.y + blockH && playerY + playerH > block.y ) {
-                    if (isInvincibleFromHeart && invulnerableTimer > 0 && !blockHitMap.includes(i)) { blockHitMap.push(i); if (getRand() < 0.25) spawnHeartItem(block.x + 8); }
+                    if (isInvincibleFromHeart && invulnerableTimer > 0 && !blockHitMap.includes(i)) { blockHitMap.push(i); if (getRand() < 0.35) spawnHeartItem(block.x + 8); }
                     let overlapX1 = (block.x + blockW) - playerX; let overlapX2 = (playerX + playerW) - block.x; let overlapY1 = (block.y + blockH) - playerY; let overlapY2 = (playerY + playerH) - block.y; 
                     let minOverlap = Math.min(overlapX1, overlapX2, overlapY1, overlapY2);
                     if (minOverlap === overlapX1) { playerX = block.x + blockW; } else if (minOverlap === overlapX2) { playerX = block.x - playerW; } else if (minOverlap === overlapY1) { playerY = block.y + blockH; } else if (minOverlap === overlapY2) { playerY = block.y - playerH; }
@@ -205,9 +210,9 @@
             }
         }
 
-        function hurtPlayer() { if (invulnerableTimer > 0) return; playerLives--; updateLivesUI(); shakeTimer = 300; shakeIntensity = 12; isInvincibleFromHeart = false; if (playerLives <= 0) { playerLives = 0; endGame(); } else { invulnerableTimer = invulnerableDuration; } }
+        function hurtPlayer() { if (invulnerableTimer > 0) return; playerLives--; updateLivesUI(); shakeTimer = 300; shakeIntensity = 10; isInvincibleFromHeart = false; if (playerLives <= 0) { playerLives = 0; endGame(); } else { invulnerableTimer = invulnerableDuration; } }
         function healPlayer() { if (playerLives < 3) { playerLives++; updateLivesUI(); } invulnerableTimer = invulnerableDuration; isInvincibleFromHeart = true; blockHitMap = []; ctx.save(); ctx.fillStyle = "rgba(255, 26, 64, 0.35)"; ctx.fillRect(0, 0, V_WIDTH, V_HEIGHT); ctx.restore(); }
-        function spawnHeartItem(customX = null) { let startX = customX !== null ? customX : (100 + getRand() * (V_WIDTH - 200)); healHearts.push({ x: startX, y: customX !== null ? playerY - 30 : -heartItemH, vy: 1.6 }); }
+        function spawnHeartItem(customX = null) { let startX = customX !== null ? customX : (100 + getRand() * (V_WIDTH - 200)); healHearts.push({ x: startX, y: customX !== null ? playerY - 30 : -heartItemH, vy: 1.5 }); }
         function updateLivesUI() { let heartStr = ""; for(let i=0; i<3; i++) heartStr += (i < playerLives) ? "❤️" : "🖤"; livesBoard.innerText = heartStr; }
 
         let lastTime = 0; let animationFrameId;
@@ -216,7 +221,7 @@
         function updateGame(dt) {
             let timeScale = dt / 16.666; rawScore += (dt * 0.06); score = Math.floor(rawScore); scoreBoard.innerText = `SCORE: ${score} (Level ${gameLevel})`;
             levelTimer += dt;
-            if (levelTimer >= 10000) { gameLevel++; levelTimer = 0; if (gameLevel >= 5 && gameLevel % 5 === 0) currentLightningSpeed += 0.8; checkAndActivateBlocks(); currentHeartCD = Math.max(12000, 30000 - (gameLevel - 1) * 1500); }
+            if (levelTimer >= 10000) { gameLevel++; levelTimer = 0; if (gameLevel >= 5 && gameLevel % 5 === 0) currentLightningSpeed += 0.5; checkAndActivateBlocks(); currentHeartCD = Math.max(10000, 20000 - (gameLevel - 1) * 1000); }
             if (invulnerableTimer > 0) { invulnerableTimer -= dt; if (invulnerableTimer <= 0) isInvincibleFromHeart = false; }
             if (isSlowed) { slowTimer -= dt; if (slowTimer <= 0) isSlowed = false; }
             if (shakeTimer > 0) shakeTimer -= dt;
@@ -229,7 +234,11 @@
 
             handleSolidCollisions(); clampPlayer();
 
-            lastSpawnTime += dt; let currentCD = Math.max(250, 1350 - (gameLevel - 1) * 150);
+            lastSpawnTime += dt; 
+            
+            // 📉 【怪量暴減修正】：拉長幽靈生成的最低時間極限（由 250ms 大幅放寬到 650ms），怪量少了一半以上！
+            let currentCD = Math.max(650, 1500 - (gameLevel - 1) * 120);
+            
             if (lastSpawnTime >= currentCD) {
                 let direction = Math.floor(getRand() * 4); let startX, startY;
                 switch(direction) { case 0: startX = getRand() * (V_WIDTH - shroomW); startY = -shroomH; break; case 1: startX = getRand() * (V_WIDTH - shroomW); startY = groundY; break; case 2: startX = -shroomW; startY = getRand() * (groundY - shroomH); break; case 3: default: startX = V_WIDTH; startY = getRand() * (groundY - shroomH); break; }
@@ -239,7 +248,7 @@
 
             lastLightningTime += dt;
             if (lastLightningTime >= currentLightningCD) {
-                if (gameLevel >= 5) { let startX = (getRand() > 0.5 ? 140 : 540) + getRand() * 40; let startY = 100; let angle = Math.atan2(playerY + (playerH/2) - startY, playerX + (playerW/2) - startX); warningLines.push({ sx: startX, sy: startY, tx: playerX + (playerW/2), ty: playerY + (playerH/2), vx: Math.cos(angle) * currentLightningSpeed, vy: Math.sin(angle) * currentLightningSpeed, timeLeft: 350 }); let levelReduction = (gameLevel - 5) * 150; currentLightningCD = 500 + getRand() * (Math.max(1200, 4000 - levelReduction) - 500); } lastLightningTime = 0;
+                if (gameLevel >= 5) { let startX = (getRand() > 0.5 ? 140 : 540) + getRand() * 40; let startY = 100; let angle = Math.atan2(playerY + (playerH/2) - startY, playerX + (playerW/2) - startX); warningLines.push({ sx: startX, sy: startY, tx: playerX + (playerW/2), ty: playerY + (playerH/2), vx: Math.cos(angle) * currentLightningSpeed, vy: Math.sin(angle) * currentLightningSpeed, timeLeft: 450 }); let levelReduction = (gameLevel - 5) * 100; currentLightningCD = 1000 + getRand() * (Math.max(1500, 4500 - levelReduction) - 1000); } lastLightningTime = 0;
             }
 
             for (let i = warningLines.length - 1; i >= 0; i--) { let w = warningLines[i]; w.timeLeft -= dt; if (w.timeLeft <= 0) { lightnings.push({ x: w.sx, y: w.sy, vx: w.vx, vy: w.vy }); warningLines.splice(i, 1); } }
@@ -252,7 +261,7 @@
                 let seedX = Math.abs(Math.sin(gameLevel * 12.9898 + 78.233)) * 43758.5453; let targetX = 180 + Math.floor((seedX - Math.floor(seedX)) * 470); 
                 let seedY = Math.abs(Math.cos(gameLevel * 45.164 + 12.731)) * 23419.1431; let targetY = 80 + Math.floor((seedY - Math.floor(seedY)) * 280); 
                 if (solidBlocks.length > 0) { for (let block of solidBlocks) { if (Math.sqrt(Math.pow(targetX - block.x, 2) + Math.pow(targetY - block.y, 2)) < 85) { targetY = (targetY + 60) > 360 ? 90 : (targetY + 60); } } }
-                solidBlocks.push({ x: targetX, y: targetY, vx: (0.8 + getRand() * 0.7) * (getRand() > 0.5 ? 1 : -1) }); spawnedLevels.push(gameLevel); 
+                solidBlocks.push({ x: targetX, y: targetY, vx: (0.6 + getRand() * 0.5) * (getRand() > 0.5 ? 1 : -1) }); spawnedLevels.push(gameLevel); 
             } 
         }
         
@@ -294,7 +303,7 @@
         function renderLeaderboardUI(board, highlightIdOrIndex, isMock = false) { leaderboardRows.innerHTML = ''; board.forEach((record, index) => { const isHighlight = isFirebaseActive ? (record.id === highlightIdOrIndex) : (index === highlightIdOrIndex); const row = document.createElement('div'); row.className = `score-row ${isHighlight ? 'highlight' : ''}`; row.innerHTML = ` <span class="score-rank">${index + 1}.</span> <span class="score-name">${record.name}</span> <span class="score-val">${record.score} (Lv.${record.level})</span> `; leaderboardRows.appendChild(row); }); }
 
         // ====================================================
-        // 第五區：生命週期控制與【⚡CORS 安全跨域防護圖片原生分享】
+        // 第五區：生命週期控制與原生分享
         // ====================================================
         async function endGame() { 
             gameActive = false; isDragging = false; cancelAnimationFrame(animationFrameId); 
@@ -329,7 +338,6 @@
             submitBtn.disabled = false; 
         });
 
-        // 🖼️ 100% 安全的純畫布渲染：完全避開 DOM 跨域污染，杜絕 toBlob 出現 null 崩潰
         function generateShareImage() {
             const sCanvas = document.getElementById('shareCanvas'); const sCtx = sCanvas.getContext('2d');
             sCtx.fillStyle = "#1a3053"; sCtx.fillRect(0, 0, 600, 315);
@@ -344,80 +352,40 @@
             sCtx.fillStyle = "#ffffff"; sCtx.font = "bold 18px sans-serif";
             sCtx.fillText(`SURVIVED LEVEL: ${gameLevel}`, 300, 225);
             sCtx.fillStyle = "rgba(255,255,255,0.4)"; sCtx.font = "12px sans-serif";
-            sCtx.fillText("ARCADE v2.01.2 • CHROME SHARE MODE", 300, 278);
+            sCtx.fillText("ARCADE v2.01.3 • EASY CHALLENGE MODE", 300, 278);
             drawPixelSprite(vibeBoyFrame0, 110, 135, 2.6, sCtx); drawPixelSprite(realShroomMap, 440, 145, 2.6, sCtx);
         }
 
-        // 📢 終極完全體原生分享核心監聽器（封殺 Tainted Canvas 與 Windows 審查拒收 Bug）
         shareBtn.addEventListener('click', async (e) => {
             e.stopPropagation();
             const modeText = isDailyChallenge ? "每日挑戰榜" : "全球街機榜";
-            
-            // 構建純文字備援戰報格式
             const textReport = `🥷 SUPER EVADE MASTER 戰報\n🎯 模式：${modeText}\n🏆 分數：${score} 分\n⚡ 等級：Level ${gameLevel}\n🔗 挑戰連結：${window.location.href}\n(貼心提示：已全自動複製到剪貼簿，可直接貼上分享！ )`;
 
             try {
-                generateShareImage(); // 背景無污染繪圖
+                generateShareImage();
                 const sCanvas = document.getElementById('shareCanvas');
-                
-                // 執行安全 Blob 轉換
                 sCanvas.toBlob(async (blob) => {
-                    // 防線 1：如果因為瀏覽器權限或極端 CORS 導致 blob 失敗，立即啟動文字剪貼簿機制，絕不讓按鈕卡死
-                    if (!blob) {
-                        executeTextFallback(textReport);
-                        return;
-                    }
-                    
-                    // 防線 2：補全 Windows 系統原生審查必須的 lastModified 時間戳
-                    const file = new File([blob], "score_report.png", { 
-                        type: "image/png",
-                        lastModified: Date.now() 
-                    });
-
+                    if (!blob) { executeTextFallback(textReport); return; }
+                    const file = new File([blob], "score_report.png", { type: "image/png", lastModified: Date.now() });
                     const shareData = {
                         title: "🥷 SUPER EVADE MASTER 戰報",
-                        text: `我在《Super Evade Master》【${modeText}】成功突破地獄，斬獲了 ${score} 分 (達到了 Level ${gameLevel})！快來打破我的街機紀錄！🔥`,
+                        text: `我在《Super Evade Master》【${modeText}】獲得了 ${score} 分 (Level ${gameLevel})！快來挑戰！🔥`,
                         url: window.location.href,
                         files: [file]
                     };
-
-                    // 防線 3：檢查當前環境是否完美支援真實檔案分享
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share(shareData); // 🎯 成功召喚 Windows / 手機的原生大面板
-                            return;
-                        } catch (err) {
-                            if (err.name === 'AbortError') return; // 用戶自行關閉面板不作錯誤處理
-                            console.warn("Native share error, switching to fallback:", err);
-                        }
+                        try { await navigator.share(shareData); return; } catch (err) { if (err.name === 'AbortError') return; }
                     }
-                    
-                    // 如果不支援檔案分享（例如某些舊版 Chrome），自動降級進入文字防線
                     executeTextFallback(textReport);
                 }, "image/png");
-
-            } catch (canvasErr) {
-                console.error("Canvas share process error:", canvasErr);
-                executeTextFallback(textReport);
-            }
+            } catch (canvasErr) { executeTextFallback(textReport); }
         });
 
-        // 📋 終極自動降級文字複製機制
         async function executeTextFallback(textReport) {
-            try {
-                await navigator.clipboard.writeText(textReport);
-                showToast("COPIED RECORD TO CLIPBOARD! 📋");
-            } catch (clipErr) {
-                const textArea = document.createElement("textarea");
-                textArea.value = textReport;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                showToast("COPIED RECORD TO CLIPBOARD! 📋");
+            try { await navigator.clipboard.writeText(textReport); showToast("COPIED RECORD TO CLIPBOARD! 📋"); } catch (clipErr) {
+                const textArea = document.createElement("textarea"); textArea.value = textReport; document.body.appendChild(textArea); textArea.select(); document.execCommand('copy'); document.body.removeChild(textArea); showToast("COPIED RECORD TO CLIPBOARD! 📋");
             }
         }
-
         function showToast(text) { toastMsg.innerText = text; toastMsg.style.display = 'block'; setTimeout(() => { toastMsg.style.display = 'none'; }, 2200); }
 
         // ====================================================
@@ -429,7 +397,7 @@
         
         function initGame() { 
             if (isFirstLoad) { fetchGlobalScores(); isFirstLoad = false; renderGame(); mainMenuPanel.style.display = 'flex'; return; } 
-            score = 0; rawScore = 0; gameLevel = 1; levelTimer = 0; lastSpawnTime = 0; lastLightningTime = 0; playerLives = 3; invulnerableTimer = 0; isSlowed = false; shakeTimer = 0; playerAnimTimer = 0; playerFrame = 0; obstacles = []; lightnings = []; solidBlocks = []; warningLines = []; spawnedLevels = []; isDragging = false; healHearts = []; heartSpawnTimer = 0; currentHeartCD = 30000; heartBlinkState = 0; isInvincibleFromHeart = false; blockHitMap = []; 
+            score = 0; rawScore = 0; gameLevel = 1; levelTimer = 0; lastSpawnTime = 0; lastLightningTime = 0; playerLives = 3; invulnerableTimer = 0; isSlowed = false; shakeTimer = 0; playerAnimTimer = 0; playerFrame = 0; obstacles = []; lightnings = []; solidBlocks = []; warningLines = []; spawnedLevels = []; isDragging = false; healHearts = []; heartSpawnTimer = 0; currentHeartCD = 20000; heartBlinkState = 0; isInvincibleFromHeart = false; blockHitMap = []; 
             lastTime = 0; initDailySeedAndDate(); checkAndActivateBlocks(); scoreBoard.innerText = "SCORE: 0 (Level 1)"; updateLivesUI(); gameOverScreen.style.display = 'none'; playerX = 100; playerY = groundY - playerH; cancelAnimationFrame(animationFrameId); requestAnimationFrame(gameTick); startCountdown(); 
         }
         
